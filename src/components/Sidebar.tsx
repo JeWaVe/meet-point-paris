@@ -15,13 +15,14 @@ interface Props {
   onToggle: () => void;
   showTransit: boolean;
   onToggleTransit: () => void;
+  onToggleBike: (id: string) => void;
   onClearAll: () => void;
   getShareUrl: () => string;
 }
 
 export default function Sidebar({
   points, onAddPoint, onRemovePoint, onCompute, computing,
-  optimalAddress, optimalTime, travelTimes, isOpen, onToggle, showTransit, onToggleTransit, onClearAll, getShareUrl,
+  optimalAddress, optimalTime, travelTimes, isOpen, onToggle, showTransit, onToggleTransit, onToggleBike, onClearAll, getShareUrl,
 }: Props) {
   const [shareOpen, setShareOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -136,6 +137,19 @@ export default function Sidebar({
                         </p>
                       )}
                     </div>
+                    <button
+                      onClick={() => onToggleBike(p.id)}
+                      title={p.hasBike ? 'A vélo' : 'Sans vélo'}
+                      className={`flex-shrink-0 p-1 rounded transition-colors ${p.hasBike ? 'text-emerald-400' : 'text-slate-600 hover:text-slate-400'}`}
+                    >
+                      <svg className="w-6 h-6" viewBox="0 0 512 512" fill="currentColor">
+                        <circle cx="125" cy="370" r="70" fill="none" stroke="currentColor" strokeWidth="40"/>
+                        <circle cx="387" cy="370" r="70" fill="none" stroke="currentColor" strokeWidth="40"/>
+                        <path d="M125 370L205 190h80" fill="none" stroke="currentColor" strokeWidth="36" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M285 190l102 180M285 190l-60 180" fill="none" stroke="currentColor" strokeWidth="36" strokeLinecap="round" strokeLinejoin="round"/>
+                        <circle cx="285" cy="155" r="35"/>
+                      </svg>
+                    </button>
                     <button
                       onClick={() => onRemovePoint(p.id)}
                       className="text-slate-500 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0"

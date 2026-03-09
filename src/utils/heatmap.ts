@@ -21,6 +21,7 @@ export interface SelectedPoint {
   lat: number;
   lng: number;
   address: string;
+  hasBike: boolean;
 }
 
 const GRID_SIZE = 80;
@@ -62,7 +63,7 @@ function computeBounds(keyPoints: { lat: number; lng: number }[]) {
 function computeL2(lat: number, lng: number, selectedPoints: SelectedPoint[]): number {
   let sumSquares = 0;
   for (const sp of selectedPoints) {
-    const t = travelTime(sp.lat, sp.lng, lat, lng);
+    const t = travelTime(sp.lat, sp.lng, lat, lng, sp.hasBike);
     sumSquares += t * t;
   }
   return Math.sqrt(sumSquares);

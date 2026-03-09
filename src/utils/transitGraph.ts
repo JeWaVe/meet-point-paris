@@ -112,17 +112,28 @@ function getDijkstra(stationId: string): Map<string, number> {
   return dijkstraCache.get(stationId)!;
 }
 
-// Calculate travel time from point A to point B using transit
-export function travelTime(fromLat: number, fromLng: number, toLat: number, toLng: number): number {
+// Cycling time in minutes (~15 km/h, with 1.3x detour factor for urban streets)
+function cyclingTime(distKm: number): number {
+  return (distKm * 1.3 / 15) * 60;
+}
+
+// Calculate travel time from point A to point B using transit (and optionally bike)
+export function travelTime(fromLat: number, fromLng: number, toLat: number, toLng: number, hasBike: boolean = false): number {
   // Direct walking distance
   const directDist = haversineDistance(fromLat, fromLng, toLat, toLng);
   const directWalk = walkingTime(directDist);
 
+  let bestTime = directWalk; // Walking is always an option
+
+  // Bike is an alternative if available
+  if (hasBike) {
+    const bikeTime = cyclingTime(directDist);
+    if (bikeTime < bestTime) bestTime = bikeTime;
+  }
+
   // Always consider transit even for short distances
   const nearFrom = findNearestStations(fromLat, fromLng, 3);
   const nearTo = findNearestStations(toLat, toLng, 3);
-
-  let bestTime = directWalk; // Walking is always an option
 
   for (const from of nearFrom) {
     // Skip if walking to station takes too long

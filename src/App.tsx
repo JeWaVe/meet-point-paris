@@ -6,20 +6,21 @@ import { travelTime } from './utils/transitGraph';
 import type { SelectedPoint, HeatmapResult } from './utils/heatmap';
 
 function encodePoints(pts: SelectedPoint[]): string {
-  return pts.map(p => `${p.lat.toFixed(5)},${p.lng.toFixed(5)},${encodeURIComponent(p.address)}`).join('|');
+  return pts.map(p => `${p.lat.toFixed(5)},${p.lng.toFixed(5)},${p.hasBike ? '1' : '0'},${encodeURIComponent(p.address)}`).join('|');
 }
 
 function decodePoints(hash: string): SelectedPoint[] {
   if (!hash) return [];
   try {
     return hash.split('|').map(segment => {
-      const [lat, lng, ...rest] = segment.split(',');
+      const [lat, lng, bike, ...rest] = segment.split(',');
       const address = decodeURIComponent(rest.join(','));
       return {
         id: `${Date.now()}_${Math.random().toString(36).slice(2)}`,
         lat: parseFloat(lat),
         lng: parseFloat(lng),
         address,
+        hasBike: bike === '1',
       };
     }).filter(p => !isNaN(p.lat) && !isNaN(p.lng));
   } catch {
@@ -64,6 +65,7 @@ function App() {
       lat,
       lng,
       address,
+      hasBike: false,
     };
     setPoints(prev => [...prev, newPoint]);
     setHeatmapResult(null);
@@ -96,6 +98,14 @@ function App() {
     setTravelTimes(new Map());
   }, []);
 
+  const toggleBike = useCallback((id: string) => {
+    setPoints(prev => prev.map(p => p.id === id ? { ...p, hasBike: !p.hasBike } : p));
+    setHeatmapResult(null);
+    setOptimalAddress(null);
+    setOptimalTime(null);
+    setTravelTimes(new Map());
+  }, []);
+
   const clearAll = useCallback(() => {
     setPoints([]);
     setHeatmapResult(null);
@@ -118,7 +128,7 @@ function App() {
         const times = new Map<string, number>();
         let totalTime = 0;
         for (const p of points) {
-          const t = travelTime(p.lat, p.lng, result.optimal.lat, result.optimal.lng);
+          const t = travelTime(p.lat, p.lng, result.optimal.lat, result.optimal.lng, p.hasBike);
           times.set(p.id, t);
           totalTime += t;
         }
@@ -155,6 +165,7 @@ function App() {
         onToggle={() => setSidebarOpen(!sidebarOpen)}
         showTransit={showTransit}
         onToggleTransit={() => setShowTransit(!showTransit)}
+        onToggleBike={toggleBike}
         onClearAll={clearAll}
         getShareUrl={getShareUrl}
       />
