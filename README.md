@@ -1,73 +1,71 @@
-# React + TypeScript + Vite
+# MeetPoint Paris
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Find the optimal meeting point in Paris based on public transit travel times.
 
-Currently, two official plugins are available:
+Enter multiple departure addresses, and the app computes the best place to meet — minimizing overall travel time across the metro and RER network.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## React Compiler
+- **Interactive map** — Click on the map or search addresses to add departure points
+- **Transit-aware routing** — Dijkstra shortest path on a graph of 500+ metro/RER stations (lines 1–14, 3bis, 7bis, RER A/B/C/D/E) with walking time to/from stations
+- **Heatmap visualization** — Canvas overlay showing travel time across Paris with a non-linear color scale (green = best, red/purple = worst)
+- **L2 optimal point** — Meeting point minimizes the L2 norm (root sum of squared travel times) for fairness across participants
+- **Individual travel times** — Each departure point shows its estimated travel time to the meeting point
+- **Share** — Share your meeting setup via WhatsApp, Facebook, or a copyable link (points encoded in URL hash)
+- **Dark theme** — CARTO dark basemap with transit lines overlay
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## How it works
 
-## Expanding the ESLint configuration
+1. Add 2+ departure points (address search or map click)
+2. Click "Calculer le point de rencontre"
+3. The app runs a two-pass computation:
+   - Coarse 30x30 grid to approximate the optimal zone
+   - Fine 80x80 grid centered on the optimal + all departure points
+4. For each grid cell, travel time from every departure point is computed using Dijkstra on the transit graph (with walking to/from nearest stations)
+5. The optimal point minimizes `sqrt(sum(t_i^2))` (L2 norm)
+6. The displayed average time is the L1 mean (arithmetic average)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Tech stack
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- React 19 + TypeScript
+- Vite
+- Tailwind CSS 4
+- Leaflet + react-leaflet
+- Nominatim (reverse geocoding)
+- No backend — everything runs client-side
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Getting started
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Build
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run build
+npm run preview
 ```
+
+## Project structure
+
+```
+src/
+  App.tsx                  # Main state management, URL sharing logic
+  components/
+    MapView.tsx            # Leaflet map, canvas heatmap overlay, markers
+    Sidebar.tsx            # Point list, controls, share menu
+    AddressSearch.tsx       # Address autocomplete (Nominatim)
+    TransitLayer.tsx        # Metro/RER lines and stations overlay
+  data/
+    stations.ts            # Station coordinates, connections, transfers
+    lines.ts               # Line definitions for visual rendering
+  utils/
+    transitGraph.ts        # Graph construction, Dijkstra, travel time
+    heatmap.ts             # Grid computation, L2 optimization
+```
+
+## License
+
+MIT
