@@ -1,0 +1,34 @@
+/// <reference types="vite/client" />
+
+declare module 'leaflet/dist/images/marker-icon.png' {
+  const value: string;
+  export default value;
+}
+
+declare module 'leaflet/dist/images/marker-icon-2x.png' {
+  const value: string;
+  export default value;
+}
+
+declare module 'leaflet/dist/images/marker-shadow.png' {
+  const value: string;
+  export default value;
+}
+
+declare module 'leaflet.heat' {
+  import * as L from 'leaflet';
+
+  namespace L {
+    function heatLayer(
+      latlngs: Array<[number, number, number]>,
+      options?: {
+        radius?: number;
+        blur?: number;
+        maxZoom?: number;
+        max?: number;
+        minOpacity?: number;
+        gradient?: Record<number, string>;
+      }
+    ): L.Layer;
+  }
+}

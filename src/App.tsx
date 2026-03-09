@@ -1,0 +1,174 @@
+import { useState, useCallback, useEffect } from 'react';
+import MapView from './components/MapView';
+import Sidebar from './components/Sidebar';
+import { computeHeatmap } from './utils/heatmap';
+import { travelTime } from './utils/transitGraph';
+import type { SelectedPoint, HeatmapResult } from './utils/heatmap';
+
+function encodePoints(pts: SelectedPoint[]): string {
+  return pts.map(p => `${p.lat.toFixed(5)},${p.lng.toFixed(5)},${encodeURIComponent(p.address)}`).join('|');
+}
+
+function decodePoints(hash: string): SelectedPoint[] {
+  if (!hash) return [];
+  try {
+    return hash.split('|').map(segment => {
+      const [lat, lng, ...rest] = segment.split(',');
+      const address = decodeURIComponent(rest.join(','));
+      return {
+        id: `${Date.now()}_${Math.random().toString(36).slice(2)}`,
+        lat: parseFloat(lat),
+        lng: parseFloat(lng),
+        address,
+      };
+    }).filter(p => !isNaN(p.lat) && !isNaN(p.lng));
+  } catch {
+    return [];
+  }
+}
+
+function App() {
+  const [points, setPoints] = useState<SelectedPoint[]>(() => {
+    const hash = window.location.hash.slice(1);
+    if (hash.startsWith('p=')) {
+      return decodePoints(hash.slice(2));
+    }
+    return [];
+  });
+  const [heatmapResult, setHeatmapResult] = useState<HeatmapResult | null>(null);
+  const [computing, setComputing] = useState(false);
+  const [optimalAddress, setOptimalAddress] = useState<string | null>(null);
+  const [optimalTime, setOptimalTime] = useState<number | null>(null);
+  const [travelTimes, setTravelTimes] = useState<Map<string, number>>(new Map());
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showTransit, setShowTransit] = useState(true);
+
+  // Update URL hash when points change
+  useEffect(() => {
+    if (points.length > 0) {
+      window.location.hash = `p=${encodePoints(points)}`;
+    } else {
+      history.replaceState(null, '', window.location.pathname);
+    }
+  }, [points]);
+
+  const getShareUrl = useCallback(() => {
+    const base = window.location.origin + window.location.pathname;
+    if (points.length === 0) return base;
+    return `${base}#p=${encodePoints(points)}`;
+  }, [points]);
+
+  const addPoint = useCallback((lat: number, lng: number, address: string) => {
+    const newPoint: SelectedPoint = {
+      id: `${Date.now()}_${Math.random().toString(36).slice(2)}`,
+      lat,
+      lng,
+      address,
+    };
+    setPoints(prev => [...prev, newPoint]);
+    setHeatmapResult(null);
+    setOptimalAddress(null);
+    setOptimalTime(null);
+    setTravelTimes(new Map());
+  }, []);
+
+  const handleMapClick = useCallback(async (lat: number, lng: number) => {
+    let address = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18`
+      );
+      const data = await res.json();
+      if (data.display_name) {
+        address = data.display_name.split(',').slice(0, 2).join(',');
+      }
+    } catch {
+      // Keep coordinate-based address
+    }
+    addPoint(lat, lng, address);
+  }, [addPoint]);
+
+  const removePoint = useCallback((id: string) => {
+    setPoints(prev => prev.filter(p => p.id !== id));
+    setHeatmapResult(null);
+    setOptimalAddress(null);
+    setOptimalTime(null);
+    setTravelTimes(new Map());
+  }, []);
+
+  const clearAll = useCallback(() => {
+    setPoints([]);
+    setHeatmapResult(null);
+    setOptimalAddress(null);
+    setOptimalTime(null);
+    setTravelTimes(new Map());
+  }, []);
+
+  const handleCompute = useCallback(async () => {
+    if (points.length < 2) return;
+
+    setComputing(true);
+
+    setTimeout(async () => {
+      try {
+        const result = computeHeatmap(points);
+        setHeatmapResult(result);
+
+        // Compute individual travel times to optimal
+        const times = new Map<string, number>();
+        let totalTime = 0;
+        for (const p of points) {
+          const t = travelTime(p.lat, p.lng, result.optimal.lat, result.optimal.lng);
+          times.set(p.id, t);
+          totalTime += t;
+        }
+        setTravelTimes(times);
+        setOptimalTime(totalTime / points.length);
+
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${result.optimal.lat}&lon=${result.optimal.lng}&zoom=18`
+          );
+          const data = await res.json();
+          setOptimalAddress(data.display_name?.split(',').slice(0, 3).join(',') || 'Point optimal');
+        } catch {
+          setOptimalAddress(`${result.optimal.lat.toFixed(4)}, ${result.optimal.lng.toFixed(4)}`);
+        }
+      } finally {
+        setComputing(false);
+      }
+    }, 50);
+  }, [points]);
+
+  return (
+    <div className="h-full flex">
+      <Sidebar
+        points={points}
+        onAddPoint={addPoint}
+        onRemovePoint={removePoint}
+        onCompute={handleCompute}
+        computing={computing}
+        optimalAddress={optimalAddress}
+        optimalTime={optimalTime}
+        travelTimes={travelTimes}
+        isOpen={sidebarOpen}
+        onToggle={() => setSidebarOpen(!sidebarOpen)}
+        showTransit={showTransit}
+        onToggleTransit={() => setShowTransit(!showTransit)}
+        onClearAll={clearAll}
+        getShareUrl={getShareUrl}
+      />
+      <div className="flex-1 relative">
+        <MapView
+          points={points}
+          heatmapResult={heatmapResult}
+          optimalAddress={optimalAddress}
+          onMapClick={handleMapClick}
+          showTransit={showTransit}
+        />
+      </div>
+    </div>
+  );
+}
+
+export default App;
