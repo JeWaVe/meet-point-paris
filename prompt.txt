@@ -1,0 +1,8 @@
+Je veux une application web (embeddable en mobile -- cross platform) qui
+- affiche une carte de paris et de son agglomération
+- permette de choisir N points sur la carte (adresses avec un champ recherche ou un point sur la carte directement)
+- calcule sous forme de heat map la distance moyenne aux N points (minimise le mécontentement) afin de trouver les endroits optimaux pour se réunir. 
+- propose un endroit de rdv optimal pour minimiser le temps moyen de trajet de chaque personne
+Utilise le langage et le Framework de ton choix
+utilise l'API ratp. Tu peux télécharger les données open-data pour calculer une première approximation en local et diminuer les appels API.
+Commence par le site web mais garde la possibilité de mobile en tête.  

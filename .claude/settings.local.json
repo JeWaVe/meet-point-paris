@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "Bash(where:*)",
+      "Bash(cmd.exe:*)",
+      "Bash(export:*)",
+      "Bash(powershell.exe:*)",
+      "Bash(grep:*)",
+      "Bash(grep -oE '\"\"m[0-9][a-z_]*\"\"' src/data/stations.ts)",
+      "WebFetch(domain:www.ratp.fr)",
+      "WebFetch(domain:nominatim.openstreetmap.org)",
+      "WebFetch(domain:fr.wikipedia.org)",
+      "Bash(curl:*)",
+      "Bash(do echo:*)",
+      "WebSearch",
+      "WebFetch(domain:en.wikipedia.org)",
+      "WebFetch(domain:www.transilien.com)",
+      "WebFetch(domain:www.bonjour-ratp.fr)",
+      "WebFetch(domain:moovitapp.com)",
+      "WebFetch(domain:parisbytrain.com)",
+      "WebFetch(domain:www.paris-metro-map.info)",
+      "WebFetch(domain:en.namu.wiki)",
+      "WebFetch(domain:maps-paris.com)",
+      "WebFetch(domain:www.pariscityvision.com)",
+      "WebFetch(domain:www.metro-connexion.org)",
+      "WebFetch(domain:www.evous.fr)",
+      "WebFetch(domain:routes.fandom.com)",
+      "WebFetch(domain:monrercetlignev.transilien.com)",
+      "WebFetch(domain:meslignesnetu.transilien.com)",
+      "Bash(/c/nvm4w/nodejs/npx.cmd tsc:*)",
+      "Bash(git:*)",
+      "WebFetch(domain:data.iledefrance-mobilites.fr)",
+      "WebFetch(domain:www.eutouring.com)",
+      "Bash(npx tsc:*)",
+      "Bash(/c/nvm4w/nodejs/npm.cmd run:*)"
+    ]
+  }
+}

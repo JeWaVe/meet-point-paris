@@ -3,7 +3,7 @@ export interface LineDefinition {
   id: string;
   name: string;
   color: string;
-  type: 'metro' | 'rer';
+  type: 'metro' | 'rer' | 'tram';
   // Each branch is an ordered array of station IDs
   branches: string[][];
 }
@@ -386,5 +386,173 @@ export const lines: LineDefinition[] = [
         "rere_ozoir", "rere_gretz", "rere_tournan",
       ],
     ],
+  },
+  // === TRAMWAY LINES ===
+  {
+    id: "T1", name: "Tramway T1", color: "#0064B0", type: "tram",
+    branches: [[
+      "t1_courtilles", "t1_le_luth", "t1_le_village", "t1_timbaud",
+      "t1_gare_gennevilliers", "t1_parc_chanteraines", "t1_chemin_reniers",
+      "t1_la_noue", "t1_mairie_villeneuve", "t1_ile_saint_denis",
+      "t1_gare_saint_denis", "t1_theatre_gerard_philipe", "t1_marche_saint_denis",
+      "t1_basilique_saint_denis", "t1_cimetiere_saint_denis", "t1_hopital_delafontaine",
+      "t1_cosmonautes", "t1_courneuve_six_routes", "t1_hdv_courneuve",
+      "t1_stade_geo_andre", "t1_danton", "t1_courneuve_8_mai",
+      "t1_maurice_lachatre", "t1_drancy_avenir", "t1_hopital_avicenne",
+      "t1_gaston_roulaud", "t1_escadrille", "t1_la_ferme",
+      "t1_liberation", "t1_hdv_bobigny", "t1_bobigny_picasso",
+      "t1_jean_rostand", "t1_auguste_delaune", "t1_pont_bondy",
+      "t1_petit_noisy", "t1_gare_noisy",
+    ]],
+  },
+  {
+    id: "T2", name: "Tramway T2", color: "#CF5DAD", type: "tram",
+    branches: [[
+      "t2_pont_bezons", "t2_parc_lagravere", "t2_victor_basch",
+      "t2_jacqueline_auriol", "t2_charlebourg", "t2_les_fauvelles",
+      "t2_faubourg_arche", "t2_la_defense", "t2_puteaux",
+      "t2_belvedere", "t2_suresnes_longchamp", "t2_les_coteaux",
+      "t2_les_milons", "t2_parc_st_cloud", "t2_musee_sevres",
+      "t2_brimborion", "t2_meudon_sur_seine", "t2_les_moulineaux",
+      "t2_lartigue", "t2_issy_val_seine", "t2_henri_farman",
+      "t2_suzanne_lenglen", "t2_porte_issy", "t2_porte_versailles",
+    ]],
+  },
+  {
+    id: "T3a", name: "Tramway T3a", color: "#F28E42", type: "tram",
+    branches: [[
+      "t3a_pont_garigliano", "t3a_balard", "t3a_desnouettes",
+      "t3a_porte_versailles", "t3a_georges_brassens", "t3a_brancion",
+      "t3a_porte_vanves", "t3a_didot", "t3a_jean_moulin",
+      "t3a_porte_orleans", "t3a_montsouris", "t3a_cite_universitaire",
+      "t3a_stade_charlety", "t3a_poterne_peupliers", "t3a_porte_italie",
+      "t3a_porte_choisy", "t3a_porte_ivry", "t3a_maryse_bastie",
+      "t3a_avenue_france", "t3a_baron_le_roy", "t3a_porte_charenton",
+      "t3a_porte_doree", "t3a_montempoivre", "t3a_alexandra_david_neel",
+      "t3a_porte_vincennes",
+    ]],
+  },
+  {
+    id: "T3b", name: "Tramway T3b", color: "#00814F", type: "tram",
+    branches: [[
+      "t3b_porte_vincennes", "t3b_porte_montreuil", "t3b_marie_miribel",
+      "t3b_porte_bagnolet", "t3b_severine", "t3b_adrienne_bolland",
+      "t3b_porte_lilas", "t3b_hopital_robert_debre", "t3b_butte_chapeau_rouge",
+      "t3b_porte_pantin", "t3b_delphine_seyrig", "t3b_ella_fitzgerald",
+      "t3b_porte_villette", "t3b_canal_saint_denis", "t3b_rosa_parks",
+      "t3b_porte_aubervilliers", "t3b_colette_besson", "t3b_porte_chapelle",
+      "t3b_diane_arbus", "t3b_porte_clignancourt", "t3b_angelique_compoint",
+      "t3b_porte_saint_ouen", "t3b_epinettes_pouchet", "t3b_honore_balzac",
+      "t3b_porte_clichy", "t3b_marguerite_long", "t3b_square_ste_odile",
+      "t3b_porte_champerret", "t3b_therese_pierre", "t3b_anny_flore",
+      "t3b_porte_maillot", "t3b_anna_noailles", "t3b_porte_dauphine",
+    ]],
+  },
+  {
+    id: "T4", name: "Tramway T4", color: "#F2A1B3", type: "tram",
+    branches: [
+      // Bondy → Aulnay
+      [
+        "t4_bondy", "t4_remise_jorelle", "t4_coquetiers", "t4_allee_tour",
+        "t4_pavillons_bois", "t4_gargan", "t4_lycee_sellier", "t4_abbaye",
+        "t4_freinville", "t4_henri_iv", "t4_rougemont_chanteloup", "t4_aulnay",
+      ],
+      // Gargan → Montfermeil
+      [
+        "t4_gargan", "t4_republique_marx_dormoy", "t4_leon_blum",
+        "t4_maurice_audin", "t4_clichy_mairie", "t4_romain_rolland",
+        "t4_clichy_montfermeil", "t4_notre_dame_anges", "t4_arboretum",
+        "t4_hopital_montfermeil",
+      ],
+    ],
+  },
+  {
+    id: "T5", name: "Tramway T5", color: "#6E491E", type: "tram",
+    branches: [[
+      "t5_marche_saint_denis", "t5_baudelaire", "t5_roger_semat",
+      "t5_guynemer", "t5_petit_pierrefitte", "t5_joncherolles",
+      "t5_suzanne_valadon", "t5_mairie_pierrefitte", "t5_alcide_orbigny",
+      "t5_jacques_prevert", "t5_butte_pinson", "t5_les_cholettes",
+      "t5_les_flanades", "t5_paul_valery", "t5_locheres", "t5_garges_sarcelles",
+    ]],
+  },
+  {
+    id: "T6", name: "Tramway T6", color: "#E4003A", type: "tram",
+    branches: [[
+      "t6_chatillon_montrouge", "t6_vauban", "t6_centre_chatillon",
+      "t6_parc_andre_malraux", "t6_division_leclerc", "t6_soleil_levant",
+      "t6_hopital_beclere", "t6_mail_plaine", "t6_pave_blanc",
+      "t6_georges_pompidou", "t6_georges_millandy", "t6_meudon_la_foret",
+      "t6_velizy_2", "t6_dewoitine", "t6_inovel_parc_nord", "t6_louvois",
+      "t6_mairie_velizy", "t6_onde", "t6_robert_wagner",
+      "t6_viroflay_rg", "t6_viroflay_rd",
+    ]],
+  },
+  {
+    id: "T7", name: "Tramway T7", color: "#6E491E", type: "tram",
+    branches: [[
+      "t7_villejuif_aragon", "t7_lamartine", "t7_domaine_cherioux",
+      "t7_moulin_vert", "t7_bretagne", "t7_auguste_perret",
+      "t7_chevilly_larue", "t7_belle_epine", "t7_place_logistique",
+      "t7_porte_rungis", "t7_saarinen", "t7_robert_schuman",
+      "t7_la_fraternelle", "t7_helene_boucher", "t7_caroline_aigle",
+      "t7_coeur_orly", "t7_aeroport_orly", "t7_porte_essonne",
+    ]],
+  },
+  {
+    id: "T8", name: "Tramway T8", color: "#837902", type: "tram",
+    branches: [
+      // Épinay-Orgemont → Saint-Denis Porte de Paris
+      [
+        "t8_epinay_orgemont", "t8_epinay_gare", "t8_gilbert_bonnemaison",
+        "t8_lacepede", "t8_rose_bertin", "t8_les_beatus", "t8_les_mobiles",
+        "t8_blumenthal", "t8_delaunay_belleville", "t8_paul_eluard",
+        "t8_saint_denis_gare", "t8_pierre_de_geyter", "t8_saint_denis_porte_paris",
+      ],
+      // Villetaneuse-Université → Saint-Denis (joining at Delaunay-Belleville)
+      [
+        "t8_villetaneuse_universite", "t8_pablo_neruda", "t8_jean_vilar",
+        "t8_cesar", "t8_delaunay_belleville",
+      ],
+    ],
+  },
+  {
+    id: "T9", name: "Tramway T9", color: "#0064B0", type: "tram",
+    branches: [[
+      "t9_porte_choisy", "t9_chateaudun_barbes", "t9_cimetiere_ivry",
+      "t9_germaine_tailleferre", "t9_la_briqueterie",
+      "t9_beethoven_concorde", "t9_musee_mac_val", "t9_mairie_vitry",
+      "t9_camille_groult", "t9_constant_coquelin", "t9_watteau_rondenay",
+      "t9_trois_communes", "t9_verdun_hoche", "t9_rouget_lisle",
+      "t9_carle_darthe", "t9_four_peary", "t9_orly_gaston_viens",
+      "t9_christophe_colomb", "t9_les_saules",
+    ]],
+  },
+  {
+    id: "T10", name: "Tramway T10", color: "#837902", type: "tram",
+    branches: [[
+      "t10_croix_berny", "t10_la_vallee", "t10_petit_chatenay",
+      "t10_theatre_piscine", "t10_les_peintres", "t10_cite_jardin",
+      "t10_vallee_aux_loups", "t10_malabry", "t10_noveos",
+      "t10_parc_sports", "t10_le_hameau", "t10_hopital_beclere",
+      "t10_jardin_parisien",
+    ]],
+  },
+  {
+    id: "T11", name: "Tramway T11", color: "#F28E42", type: "tram",
+    branches: [[
+      "t11_epinay_sur_seine", "t11_epinay_villetaneuse", "t11_villetaneuse_universite",
+      "t11_pierrefitte_stains", "t11_stains_cerisaie", "t11_dugny_courneuve",
+      "t11_le_bourget",
+    ]],
+  },
+  {
+    id: "T13", name: "Tramway T13", color: "#00814F", type: "tram",
+    branches: [[
+      "t13_saint_germain", "t13_camp_loges", "t13_lisiere_pereire",
+      "t13_fourqueux", "t13_mareil_marly", "t13_etang_sablons",
+      "t13_saint_nom_breteche", "t13_noisy_roi", "t13_bailly",
+      "t13_allee_royale", "t13_portes_saint_cyr", "t13_saint_cyr",
+    ]],
   },
 ];

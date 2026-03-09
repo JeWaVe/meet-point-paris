@@ -58,9 +58,9 @@ export default function TransitLayer({ showStations, showLines }: Props) {
             positions={coords}
             pathOptions={{
               color: line.color,
-              weight: line.type === 'rer' ? 4 : 3,
-              opacity: 0.85,
-              dashArray: line.type === 'rer' ? '8 4' : undefined,
+              weight: line.type === 'rer' ? 4 : line.type === 'tram' ? 2 : 3,
+              opacity: line.type === 'tram' ? 0.7 : 0.85,
+              dashArray: line.type === 'rer' ? '8 4' : line.type === 'tram' ? '4 3' : undefined,
             }}
           >
             <Tooltip sticky>{line.name}</Tooltip>
