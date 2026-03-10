@@ -2,6 +2,7 @@ import { useEffect, useRef, useCallback } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import type { SelectedPoint, HeatmapResult } from '../utils/heatmap';
+import type { NearbyPlace } from '../utils/places';
 import TransitLayer from './TransitLayer';
 
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
@@ -24,6 +25,13 @@ const optimalIcon = new L.DivIcon({
   className: '',
   iconSize: [36, 36],
   iconAnchor: [18, 18],
+});
+
+const placeIcon = new L.DivIcon({
+  html: `<div style="background: #f59e0b; width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 12px;">🍽️</div>`,
+  className: '',
+  iconSize: [24, 24],
+  iconAnchor: [12, 12],
 });
 
 function MapClickHandler({ onClick }: { onClick: (lat: number, lng: number) => void }) {
@@ -177,9 +185,10 @@ interface Props {
   optimalAddress: string | null;
   onMapClick: (lat: number, lng: number) => void;
   showTransit: boolean;
+  nearbyPlaces: NearbyPlace[];
 }
 
-export default function MapView({ points, heatmapResult, optimalAddress, onMapClick, showTransit }: Props) {
+export default function MapView({ points, heatmapResult, optimalAddress, onMapClick, showTransit, nearbyPlaces }: Props) {
   return (
     <MapContainer
       center={[48.8566, 2.3522]}
@@ -224,6 +233,22 @@ export default function MapView({ points, heatmapResult, optimalAddress, onMapCl
           </Popup>
         </Marker>
       )}
+
+      {nearbyPlaces.map(place => (
+        <Marker key={place.id} position={[place.lat, place.lng]} icon={placeIcon}>
+          <Popup>
+            <div className="text-sm">
+              <strong>{place.name}</strong>
+              {place.rating && <span> — {place.rating}★ ({place.userRatingCount})</span>}
+              {place.priceLevel && <span> · {place.priceLevel}</span>}
+              {place.address && <><br />{place.address}</>}
+              {place.googleMapsUri && (
+                <><br /><a href={place.googleMapsUri} target="_blank" rel="noopener noreferrer" style={{color: '#6366f1'}}>Voir sur Google Maps</a></>
+              )}
+            </div>
+          </Popup>
+        </Marker>
+      ))}
     </MapContainer>
   );
 }

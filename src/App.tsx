@@ -3,6 +3,8 @@ import MapView from './components/MapView';
 import Sidebar from './components/Sidebar';
 import { computeHeatmap } from './utils/heatmap';
 import { travelTime } from './utils/transitGraph';
+import { searchNearbyPlaces } from './utils/places';
+import type { NearbyPlace } from './utils/places';
 import type { SelectedPoint, HeatmapResult } from './utils/heatmap';
 
 function encodePoints(pts: SelectedPoint[]): string {
@@ -45,6 +47,7 @@ function App() {
   const [travelTimes, setTravelTimes] = useState<Map<string, number>>(new Map());
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showTransit, setShowTransit] = useState(true);
+  const [nearbyPlaces, setNearbyPlaces] = useState<NearbyPlace[]>([]);
 
   // Update URL hash when points change
   useEffect(() => {
@@ -76,6 +79,7 @@ function App() {
     setOptimalLat(null);
     setOptimalLng(null);
     setTravelTimes(new Map());
+    setNearbyPlaces([]);
     setSidebarOpen(false); // Close bottom sheet on mobile after adding point
   }, []);
 
@@ -103,6 +107,7 @@ function App() {
     setOptimalLat(null);
     setOptimalLng(null);
     setTravelTimes(new Map());
+    setNearbyPlaces([]);
   }, []);
 
   const toggleBike = useCallback((id: string) => {
@@ -113,6 +118,7 @@ function App() {
     setOptimalLat(null);
     setOptimalLng(null);
     setTravelTimes(new Map());
+    setNearbyPlaces([]);
   }, []);
 
   const clearAll = useCallback(() => {
@@ -123,6 +129,7 @@ function App() {
     setOptimalLat(null);
     setOptimalLng(null);
     setTravelTimes(new Map());
+    setNearbyPlaces([]);
   }, []);
 
   const handleCompute = useCallback(async () => {
@@ -157,6 +164,9 @@ function App() {
         } catch {
           setOptimalAddress(`${result.optimal.lat.toFixed(4)}, ${result.optimal.lng.toFixed(4)}`);
         }
+
+        // Fetch nearby restaurants/cafés/bars
+        searchNearbyPlaces(result.optimal.lat, result.optimal.lng).then(setNearbyPlaces).catch(() => {});
       } finally {
         setComputing(false);
       }
@@ -194,6 +204,7 @@ function App() {
         onToggleBike={toggleBike}
         onClearAll={clearAll}
         getShareUrl={getShareUrl}
+        nearbyPlaces={nearbyPlaces}
       />
       <div className="flex-1 relative">
         <MapView
@@ -202,6 +213,7 @@ function App() {
           optimalAddress={optimalAddress}
           onMapClick={handleMapClick}
           showTransit={showTransit}
+          nearbyPlaces={nearbyPlaces}
         />
       </div>
     </div>

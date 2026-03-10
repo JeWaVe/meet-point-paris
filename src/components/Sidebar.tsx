@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { SelectedPoint } from '../utils/heatmap';
+import type { NearbyPlace } from '../utils/places';
 import AddressSearch from './AddressSearch';
 
 interface Props {
@@ -20,11 +21,12 @@ interface Props {
   onToggleBike: (id: string) => void;
   onClearAll: () => void;
   getShareUrl: () => string;
+  nearbyPlaces: NearbyPlace[];
 }
 
 export default function Sidebar({
   points, onAddPoint, onRemovePoint, onCompute, computing,
-  optimalAddress, optimalTime, optimalLat, optimalLng, travelTimes, isOpen, onToggle, showTransit, onToggleTransit, onToggleBike, onClearAll, getShareUrl,
+  optimalAddress, optimalTime, optimalLat, optimalLng, travelTimes, isOpen, onToggle, showTransit, onToggleTransit, onToggleBike, onClearAll, getShareUrl, nearbyPlaces,
 }: Props) {
   const [shareOpen, setShareOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -231,6 +233,37 @@ export default function Sidebar({
                 <p className="text-emerald-400 text-sm mt-1">
                   Temps moyen de trajet : {Math.round(optimalTime)} min
                 </p>
+              </div>
+            )}
+
+            {/* Nearby places */}
+            {nearbyPlaces.length > 0 && (
+              <div className="bg-amber-900/20 border border-amber-700/40 rounded-lg p-3 md:p-4">
+                <h3 className="text-sm font-medium text-amber-300 mb-2 flex items-center gap-2">
+                  <span>🍽️</span> À proximité
+                </h3>
+                <div className="space-y-1.5 max-h-40 overflow-y-auto">
+                  {nearbyPlaces.map(place => (
+                    <a
+                      key={place.id}
+                      href={place.googleMapsUri || '#'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-between gap-2 text-sm hover:bg-amber-900/30 active:bg-amber-900/30 rounded px-2 py-1.5 transition-colors group"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <span className="text-white group-hover:text-amber-200 truncate block">{place.name}</span>
+                        {place.address && (
+                          <span className="text-slate-500 text-xs truncate block">{place.address}</span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1.5 flex-shrink-0 text-xs">
+                        {place.priceLevel && <span className="text-amber-400">{place.priceLevel}</span>}
+                        {place.rating && <span className="text-amber-300">{place.rating}★</span>}
+                      </div>
+                    </a>
+                  ))}
+                </div>
               </div>
             )}
 
