@@ -9,12 +9,14 @@ Enter multiple departure addresses, and the app computes the best place to meet 
 ## Features
 
 - **Interactive map** — Click on the map or search addresses to add departure points
-- **Real GTFS travel times** — Inter-station times and transfer durations extracted from the official IDFM GTFS dataset (1292 segments, 474 transfers), replacing fixed estimates
-- **Transit-aware routing** — Dijkstra shortest path on a graph of 750+ stations: metro (lines 1–14, 3bis, 7bis), RER (A/B/C/D/E), and tramway (T1–T13), with walking time to/from stations
-- **Bike mode** — Toggle bike availability per participant (cycling at ~15 km/h with urban detour factor); the optimizer picks the fastest option between transit, walking, and cycling
+- **Real GTFS travel times** — Inter-station times and transfer durations extracted from the official IDFM GTFS dataset (1292 segments, 474 transfers), with realistic dwell time, boarding penalty, and transfer wait times
+- **Transit-aware routing** — Precomputed all-pairs shortest paths on a graph of 750+ stations: metro (lines 1–14, 3bis, 7bis), RER (A/B/C/D/E), and tramway (T1–T13), with spatial index for fast nearest-station lookup
+- **Bike mode** — Toggle bike availability per participant (cycling at ~10 km/h effective with urban detour factor); the optimizer picks the fastest option between transit, walking, and cycling
+- **Google Maps itinerary** — Each departure point links to Google Maps transit/cycling directions to the optimal meeting point
 - **Heatmap visualization** — Canvas overlay showing travel time across Paris with a non-linear color scale (green = best, red/purple = worst)
 - **L2 optimal point** — Meeting point minimizes the L2 norm (root sum of squared travel times) for fairness across participants
 - **Individual travel times** — Each departure point shows its estimated travel time to the meeting point
+- **Auto-compute from URL** — When the page loads with points in the URL, the optimal meeting point is computed automatically
 - **Share** — Share your meeting setup via WhatsApp, Messenger, or a copyable link (points and options encoded in URL hash)
 - **Social media preview** — Open Graph and Twitter Card meta tags with preview image
 - **Dark theme** — CARTO dark basemap with metro, RER, and tramway lines overlay
@@ -27,8 +29,8 @@ Enter multiple departure addresses, and the app computes the best place to meet 
 4. The app runs a two-pass computation:
    - Coarse 30x30 grid to approximate the optimal zone
    - Fine 80x80 grid centered on the optimal + all departure points
-5. For each grid cell, travel time from every departure point is computed using Dijkstra on the transit graph (with walking/cycling to/from nearest stations)
-6. Edge weights come from GTFS real scheduled times when available, with static fallback
+5. For each grid cell, travel time from every departure point is computed via precomputed all-pairs shortest paths (with walking/cycling to/from nearest stations)
+6. Edge weights come from GTFS real scheduled times when available (+ 30s dwell time per stop, 2 min boarding penalty, 2 min transfer wait), with static fallback
 7. The optimal point minimizes `sqrt(sum(t_i^2))` (L2 norm)
 8. The displayed average time is the L1 mean (arithmetic average)
 

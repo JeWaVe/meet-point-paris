@@ -150,7 +150,7 @@ export const lines: LineDefinition[] = [
       "m9_michel_ange_auteuil", "m9_jasmin", "m9_ranelagh",
       "m9_muette", "m9_rue_pompe", "m6_trocadero", "m9_iena",
       "m9_alma_marceau", "m1_franklin", "m9_st_philippe",
-      "m9_miromesnil", "m7_chaussee_antin", "m3_havre_caumartin",
+      "m9_miromesnil", "m3_havre_caumartin", "m7_chaussee_antin",
       "m8_richelieu", "m8_grands_boulevards", "m8_bonne_nouvelle",
       "m4_strasbourg_st_denis", "m3_republique", "m5_oberkampf",
       "m9_voltaire", "m9_charonne", "m9_rue_boulets",

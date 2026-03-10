@@ -40,6 +40,8 @@ function App() {
   const [computing, setComputing] = useState(false);
   const [optimalAddress, setOptimalAddress] = useState<string | null>(null);
   const [optimalTime, setOptimalTime] = useState<number | null>(null);
+  const [optimalLat, setOptimalLat] = useState<number | null>(null);
+  const [optimalLng, setOptimalLng] = useState<number | null>(null);
   const [travelTimes, setTravelTimes] = useState<Map<string, number>>(new Map());
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showTransit, setShowTransit] = useState(true);
@@ -71,6 +73,8 @@ function App() {
     setHeatmapResult(null);
     setOptimalAddress(null);
     setOptimalTime(null);
+    setOptimalLat(null);
+    setOptimalLng(null);
     setTravelTimes(new Map());
   }, []);
 
@@ -95,6 +99,8 @@ function App() {
     setHeatmapResult(null);
     setOptimalAddress(null);
     setOptimalTime(null);
+    setOptimalLat(null);
+    setOptimalLng(null);
     setTravelTimes(new Map());
   }, []);
 
@@ -103,6 +109,8 @@ function App() {
     setHeatmapResult(null);
     setOptimalAddress(null);
     setOptimalTime(null);
+    setOptimalLat(null);
+    setOptimalLng(null);
     setTravelTimes(new Map());
   }, []);
 
@@ -111,6 +119,8 @@ function App() {
     setHeatmapResult(null);
     setOptimalAddress(null);
     setOptimalTime(null);
+    setOptimalLat(null);
+    setOptimalLng(null);
     setTravelTimes(new Map());
   }, []);
 
@@ -134,6 +144,8 @@ function App() {
         }
         setTravelTimes(times);
         setOptimalTime(totalTime / points.length);
+        setOptimalLat(result.optimal.lat);
+        setOptimalLng(result.optimal.lng);
 
         try {
           const res = await fetch(
@@ -150,6 +162,15 @@ function App() {
     }, 50);
   }, [points]);
 
+  // Auto-compute on load if points came from URL
+  const [autoComputed, setAutoComputed] = useState(false);
+  useEffect(() => {
+    if (!autoComputed && points.length >= 2) {
+      setAutoComputed(true);
+      handleCompute();
+    }
+  }, [autoComputed, points, handleCompute]);
+
   return (
     <div className="h-full flex">
       <Sidebar
@@ -160,6 +181,8 @@ function App() {
         computing={computing}
         optimalAddress={optimalAddress}
         optimalTime={optimalTime}
+        optimalLat={optimalLat}
+        optimalLng={optimalLng}
         travelTimes={travelTimes}
         isOpen={sidebarOpen}
         onToggle={() => setSidebarOpen(!sidebarOpen)}

@@ -1,4 +1,5 @@
-import { travelTime } from './transitGraph';
+import { travelTimeFromCached, findNearestStations } from './transitGraph';
+import type { NearStation } from './transitGraph';
 
 export interface HeatmapPoint {
   lat: number;
@@ -60,10 +61,17 @@ function computeBounds(keyPoints: { lat: number; lng: number }[]) {
   return { latMin, latMax, lngMin, lngMax };
 }
 
-function computeL2(lat: number, lng: number, selectedPoints: SelectedPoint[]): number {
+interface CachedSelectedPoint {
+  lat: number;
+  lng: number;
+  hasBike: boolean;
+  nearStations: NearStation[];
+}
+
+function computeL2Cached(lat: number, lng: number, cachedPoints: CachedSelectedPoint[]): number {
   let sumSquares = 0;
-  for (const sp of selectedPoints) {
-    const t = travelTime(sp.lat, sp.lng, lat, lng, sp.hasBike);
+  for (const sp of cachedPoints) {
+    const t = travelTimeFromCached(sp.nearStations, sp.lat, sp.lng, lat, lng, sp.hasBike);
     sumSquares += t * t;
   }
   return Math.sqrt(sumSquares);
@@ -71,7 +79,7 @@ function computeL2(lat: number, lng: number, selectedPoints: SelectedPoint[]): n
 
 // Quick coarse pass to find approximate optimal point
 const COARSE_SIZE = 30;
-function findApproxOptimal(selectedPoints: SelectedPoint[]): { lat: number; lng: number } {
+function findApproxOptimal(cachedPoints: CachedSelectedPoint[], selectedPoints: SelectedPoint[]): { lat: number; lng: number } {
   const coarseBounds = computeBounds(selectedPoints);
   const latStep = (coarseBounds.latMax - coarseBounds.latMin) / COARSE_SIZE;
   const lngStep = (coarseBounds.lngMax - coarseBounds.lngMin) / COARSE_SIZE;
@@ -83,7 +91,7 @@ function findApproxOptimal(selectedPoints: SelectedPoint[]): { lat: number; lng:
     for (let j = 0; j < COARSE_SIZE; j++) {
       const lat = coarseBounds.latMin + (i + 0.5) * latStep;
       const lng = coarseBounds.lngMin + (j + 0.5) * lngStep;
-      const t = computeL2(lat, lng, selectedPoints);
+      const t = computeL2Cached(lat, lng, cachedPoints);
       if (t < bestTime) {
         bestTime = t;
         bestLat = lat;
@@ -103,8 +111,16 @@ export function computeHeatmap(selectedPoints: SelectedPoint[]): HeatmapResult {
     };
   }
 
+  // Precompute nearest stations for each selected point (done once, reused for all grid cells)
+  const cachedPoints: CachedSelectedPoint[] = selectedPoints.map(sp => ({
+    lat: sp.lat,
+    lng: sp.lng,
+    hasBike: sp.hasBike,
+    nearStations: findNearestStations(sp.lat, sp.lng, 3),
+  }));
+
   // 1. Find approximate optimal on coarse grid
-  const approxOptimal = findApproxOptimal(selectedPoints);
+  const approxOptimal = findApproxOptimal(cachedPoints, selectedPoints);
 
   // 2. Compute bounds that include all selected points AND the optimal
   const bounds = computeBounds([...selectedPoints, approxOptimal]);
@@ -123,7 +139,7 @@ export function computeHeatmap(selectedPoints: SelectedPoint[]): HeatmapResult {
     for (let j = 0; j < GRID_SIZE; j++) {
       const lat = bounds.latMin + (i + 0.5) * latStep;
       const lng = bounds.lngMin + (j + 0.5) * lngStep;
-      const avgTime = computeL2(lat, lng, selectedPoints);
+      const avgTime = computeL2Cached(lat, lng, cachedPoints);
 
       grid[i][j] = avgTime;
       points.push({ lat, lng, time: avgTime });
