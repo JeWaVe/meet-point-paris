@@ -4,7 +4,7 @@ Find the optimal meeting point in Paris based on public transit travel times.
 
 Enter multiple departure addresses, and the app computes the best place to meet — minimizing overall travel time across the metro, RER, and tramway network.
 
-**Live demo:** https://jewave.github.io/meet-point-paris/
+**Live demo:** https://wheretomeet.app/
 
 ## Features
 
@@ -19,6 +19,8 @@ Enter multiple departure addresses, and the app computes the best place to meet 
 - **Auto-compute from URL** — When the page loads with points in the URL, the optimal meeting point is computed automatically
 - **Share** — Share your meeting setup via WhatsApp, Messenger, or a copyable link (points and options encoded in URL hash)
 - **Social media preview** — Open Graph and Twitter Card meta tags with preview image
+- **Mobile-friendly** — Responsive bottom sheet UI on mobile (FAB toggle, auto-close after adding points, touch-friendly controls), full sidebar on desktop
+- **Analytics** — Umami Cloud (cookie-free, GDPR compliant)
 - **Dark theme** — CARTO dark basemap with metro, RER, and tramway lines overlay
 
 ## How it works

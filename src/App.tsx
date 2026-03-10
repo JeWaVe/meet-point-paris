@@ -76,6 +76,7 @@ function App() {
     setOptimalLat(null);
     setOptimalLng(null);
     setTravelTimes(new Map());
+    setSidebarOpen(false); // Close bottom sheet on mobile after adding point
   }, []);
 
   const handleMapClick = useCallback(async (lat: number, lng: number) => {
