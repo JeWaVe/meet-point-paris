@@ -4,13 +4,18 @@
     <meta charset="UTF-8" />
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📍</text></svg>" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WhereToMeet - Find the fairest meeting point</title>
-    <meta name="description" content="Find the optimal meeting point using public transit. Add departure locations and compute the fairest place to meet in Paris." />
+    <title>WhereToMeet — Trouvez le lieu de rendez-vous idéal à Paris</title>
+    <meta name="description" content="Calculez le point de rencontre optimal en transports en commun à Paris. Ajoutez vos adresses de départ et trouvez le lieu le plus équitable pour se retrouver. Métro, RER, tramway et vélo." />
+    <link rel="canonical" href="https://wheretomeet.app/" />
+    <meta name="keywords" content="lieu de rendez-vous, point de rencontre, Paris, transports en commun, métro, RER, tramway, vélo, meeting point, optimal" />
+    <meta name="robots" content="index, follow" />
+    <link rel="alternate" hreflang="fr" href="https://wheretomeet.app/" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="WhereToMeet" />
-    <meta property="og:description" content="Find the fairest meeting point using public transit." />
+    <meta property="og:site_name" content="WhereToMeet" />
+    <meta property="og:title" content="WhereToMeet — Trouvez le lieu de rendez-vous idéal à Paris" />
+    <meta property="og:description" content="Calculez le point de rencontre optimal en transports en commun. Métro, RER, tramway et vélo. Restaurants et bars à proximité." />
     <meta property="og:image" content="https://wheretomeet.app/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -19,15 +24,57 @@
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="WhereToMeet" />
-    <meta name="twitter:description" content="Find the fairest meeting point using public transit." />
+    <meta name="twitter:title" content="WhereToMeet — Lieu de rendez-vous optimal à Paris" />
+    <meta name="twitter:description" content="Calculez le point de rencontre optimal en transports en commun. Métro, RER, tramway et vélo." />
     <meta name="twitter:image" content="https://wheretomeet.app/og-image.png" />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "WhereToMeet",
+      "url": "https://wheretomeet.app/",
+      "description": "Calculez le point de rencontre optimal en transports en commun à Paris. Métro, RER, tramway et vélo.",
+      "applicationCategory": "TravelApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "EUR"
+      },
+      "browserRequirements": "Requires JavaScript",
+      "availableLanguage": "fr",
+      "areaServed": {
+        "@type": "City",
+        "name": "Paris",
+        "sameAs": "https://www.wikidata.org/wiki/Q90"
+      }
+    }
+    </script>
 
     <!-- Analytics (Umami - cookie-free, GDPR compliant) -->
     <script defer src="https://cloud.umami.is/script.js" data-website-id="fa610cf1-449d-4e1b-bbee-c247144d37a6"></script>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <div style="max-width: 600px; margin: 40px auto; padding: 20px; font-family: system-ui, sans-serif;">
+        <h1>WhereToMeet — Trouvez le lieu de rendez-vous idéal à Paris</h1>
+        <p>WhereToMeet calcule le point de rencontre optimal en transports en commun à Paris.</p>
+        <h2>Comment ça marche ?</h2>
+        <ol>
+          <li>Ajoutez 2 adresses de départ ou plus (recherche ou clic sur la carte)</li>
+          <li>Activez le mode vélo pour chaque participant si besoin</li>
+          <li>Cliquez sur « Calculer le point de rencontre »</li>
+          <li>Découvrez le lieu optimal avec les restaurants, cafés et bars à proximité</li>
+        </ol>
+        <h2>Réseau couvert</h2>
+        <p>Métro (lignes 1–14, 3bis, 7bis), RER (A–E), Tramway (T1–T13), vélo et marche à pied.</p>
+        <p>Plus de 750 stations avec des temps de trajet réels issus des données GTFS d'Île-de-France Mobilités.</p>
+        <p><strong>JavaScript est requis pour utiliser cette application.</strong></p>
+      </div>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
