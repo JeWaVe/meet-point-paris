@@ -27,12 +27,24 @@ const optimalIcon = new L.DivIcon({
   iconAnchor: [18, 18],
 });
 
-const placeIcon = new L.DivIcon({
-  html: `<div style="background: #f59e0b; width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 12px;">🍽️</div>`,
-  className: '',
-  iconSize: [24, 24],
-  iconAnchor: [12, 12],
-});
+function getPlaceCategory(types: string[]): { emoji: string; label: string } {
+  if (types.includes('bar')) return { emoji: '🍸', label: 'Bar' };
+  if (types.includes('cafe')) return { emoji: '☕', label: 'Café' };
+  return { emoji: '🍽️', label: 'Restaurant' };
+}
+
+const placeIcons: Record<string, L.DivIcon> = {};
+function getPlaceIcon(emoji: string) {
+  if (!placeIcons[emoji]) {
+    placeIcons[emoji] = new L.DivIcon({
+      html: `<div style="background: #f59e0b; width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; font-size: 12px;">${emoji}</div>`,
+      className: '',
+      iconSize: [24, 24],
+      iconAnchor: [12, 12],
+    });
+  }
+  return placeIcons[emoji];
+}
 
 function MapClickHandler({ onClick }: { onClick: (lat: number, lng: number) => void }) {
   useMapEvents({
@@ -234,11 +246,15 @@ export default function MapView({ points, heatmapResult, optimalAddress, onMapCl
         </Marker>
       )}
 
-      {nearbyPlaces.map(place => (
-        <Marker key={place.id} position={[place.lat, place.lng]} icon={placeIcon}>
+      {nearbyPlaces.map(place => {
+        const cat = getPlaceCategory(place.types);
+        return (
+        <Marker key={place.id} position={[place.lat, place.lng]} icon={getPlaceIcon(cat.emoji)}>
           <Popup>
             <div className="text-sm">
+              <span style={{marginRight: 4}}>{cat.emoji}</span>
               <strong>{place.name}</strong>
+              <span style={{color: '#888', marginLeft: 4}}>{cat.label}</span>
               {place.rating && <span> — {place.rating}★ ({place.userRatingCount})</span>}
               {place.priceLevel && <span> · {place.priceLevel}</span>}
               {place.address && <><br />{place.address}</>}
@@ -248,7 +264,8 @@ export default function MapView({ points, heatmapResult, optimalAddress, onMapCl
             </div>
           </Popup>
         </Marker>
-      ))}
+        );
+      })}
     </MapContainer>
   );
 }

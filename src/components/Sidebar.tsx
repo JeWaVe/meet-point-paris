@@ -3,6 +3,12 @@ import type { SelectedPoint } from '../utils/heatmap';
 import type { NearbyPlace } from '../utils/places';
 import AddressSearch from './AddressSearch';
 
+function placeEmoji(types: string[]): string {
+  if (types.includes('bar')) return '🍸';
+  if (types.includes('cafe')) return '☕';
+  return '🍽️';
+}
+
 interface Props {
   points: SelectedPoint[];
   onAddPoint: (lat: number, lng: number, address: string) => void;
@@ -240,7 +246,7 @@ export default function Sidebar({
             {nearbyPlaces.length > 0 && (
               <div className="bg-amber-900/20 border border-amber-700/40 rounded-lg p-3 md:p-4">
                 <h3 className="text-sm font-medium text-amber-300 mb-2 flex items-center gap-2">
-                  <span>🍽️</span> À proximité
+                  🍽️ À proximité
                 </h3>
                 <div className="space-y-1.5 max-h-40 overflow-y-auto">
                   {nearbyPlaces.map(place => (
@@ -252,7 +258,7 @@ export default function Sidebar({
                       className="flex items-center justify-between gap-2 text-sm hover:bg-amber-900/30 active:bg-amber-900/30 rounded px-2 py-1.5 transition-colors group"
                     >
                       <div className="min-w-0 flex-1">
-                        <span className="text-white group-hover:text-amber-200 truncate block">{place.name}</span>
+                        <span className="text-white group-hover:text-amber-200 truncate block">{placeEmoji(place.types)} {place.name}</span>
                         {place.address && (
                           <span className="text-slate-500 text-xs truncate block">{place.address}</span>
                         )}

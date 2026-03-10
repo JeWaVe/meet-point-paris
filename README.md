@@ -12,6 +12,7 @@ Enter multiple departure addresses, and the app computes the best place to meet 
 - **Real GTFS travel times** — Inter-station times and transfer durations extracted from the official IDFM GTFS dataset (1292 segments, 474 transfers), with realistic dwell time, boarding penalty, and transfer wait times
 - **Line-aware routing** — Expanded graph where each node is a (station, line) pair, so line switches at shared stations incur a realistic transfer cost. Precomputed all-pairs shortest paths on 750+ stations across metro (1–14, 3bis, 7bis), RER (A–E), and tramway (T1–T13), with spatial index for fast nearest-station lookup
 - **Bike mode** — Toggle bike availability per participant (cycling at ~10 km/h effective with urban detour factor); the optimizer picks the fastest option between transit, walking, and cycling
+- **Nearby places** — Google Places API shows restaurants (🍽️), cafés (☕), and bars (🍸) within 500m of the optimal point, with ratings, price levels, and Google Maps links
 - **Google Maps itinerary** — Each departure point links to Google Maps transit/cycling directions to the optimal meeting point
 - **Heatmap visualization** — Canvas overlay showing travel time across Paris with a non-linear color scale (green = best, red/purple = worst)
 - **L2 optimal point** — Meeting point minimizes the L2 norm (root sum of squared travel times) for fairness across participants
