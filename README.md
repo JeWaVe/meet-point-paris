@@ -9,6 +9,7 @@ Enter multiple departure addresses, and the app computes the best place to meet 
 ## Features
 
 - **Interactive map** — Click on the map or search addresses to add departure points
+- **Real GTFS travel times** — Inter-station times and transfer durations extracted from the official IDFM GTFS dataset (1292 segments, 474 transfers), replacing fixed estimates
 - **Transit-aware routing** — Dijkstra shortest path on a graph of 750+ stations: metro (lines 1–14, 3bis, 7bis), RER (A/B/C/D/E), and tramway (T1–T13), with walking time to/from stations
 - **Bike mode** — Toggle bike availability per participant (cycling at ~15 km/h with urban detour factor); the optimizer picks the fastest option between transit, walking, and cycling
 - **Heatmap visualization** — Canvas overlay showing travel time across Paris with a non-linear color scale (green = best, red/purple = worst)
@@ -27,8 +28,23 @@ Enter multiple departure addresses, and the app computes the best place to meet 
    - Coarse 30x30 grid to approximate the optimal zone
    - Fine 80x80 grid centered on the optimal + all departure points
 5. For each grid cell, travel time from every departure point is computed using Dijkstra on the transit graph (with walking/cycling to/from nearest stations)
-6. The optimal point minimizes `sqrt(sum(t_i^2))` (L2 norm)
-7. The displayed average time is the L1 mean (arithmetic average)
+6. Edge weights come from GTFS real scheduled times when available, with static fallback
+7. The optimal point minimizes `sqrt(sum(t_i^2))` (L2 norm)
+8. The displayed average time is the L1 mean (arithmetic average)
+
+## GTFS data pipeline
+
+The `scripts/` directory contains Node scripts to extract data from the IDFM GTFS feed:
+
+1. `extract-gtfs.mjs` — Downloads and parses the GTFS zip, extracts inter-station travel times (median of `stop_times.txt`), headways per line/period, and transfer times
+2. `build-gtfs-data.mjs` — Matches GTFS parent stations to app station IDs by proximity, generates `src/data/gtfs-times.ts`
+
+To regenerate (requires ~1GB disk for the raw GTFS):
+
+```bash
+node scripts/extract-gtfs.mjs
+node scripts/build-gtfs-data.mjs
+```
 
 ## Tech stack
 
@@ -37,6 +53,7 @@ Enter multiple departure addresses, and the app computes the best place to meet 
 - Tailwind CSS 4
 - Leaflet + react-leaflet
 - Nominatim (reverse geocoding)
+- IDFM GTFS (scheduled timetables from Ile-de-France Mobilités)
 - No backend — everything runs client-side
 
 ## Getting started
@@ -66,9 +83,13 @@ src/
   data/
     stations.ts            # Station coordinates, connections, transfers
     lines.ts               # Line definitions for visual rendering
+    gtfs-times.ts          # Auto-generated GTFS travel times and transfers
   utils/
     transitGraph.ts        # Graph construction, Dijkstra, travel time + bike
     heatmap.ts             # Grid computation, L2 optimization
+scripts/
+  extract-gtfs.mjs         # Parse raw GTFS data
+  build-gtfs-data.mjs      # Match stations and generate gtfs-times.ts
 ```
 
 ## License

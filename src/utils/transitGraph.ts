@@ -1,5 +1,6 @@
 import { stations, connections } from '../data/stations';
 import type { Station } from '../data/stations';
+import { gtfsSegmentTimes, gtfsTransferTimes } from '../data/gtfs-times';
 
 interface GraphNode {
   neighbors: Map<string, number>; // stationId -> time in minutes
@@ -16,13 +17,23 @@ for (const conn of connections) {
   const fromNode = graph.get(conn.from);
   const toNode = graph.get(conn.to);
   if (fromNode && toNode) {
+    // Use GTFS time if available, otherwise fall back to static estimate
+    const gtfsTime = gtfsSegmentTimes[`${conn.from}|${conn.to}`];
+    const gtfsTransfer = gtfsTransferTimes[`${conn.from}|${conn.to}`];
+    const time = gtfsTime ?? gtfsTransfer ?? conn.time;
+
     const existing = fromNode.neighbors.get(conn.to);
-    if (!existing || conn.time < existing) {
-      fromNode.neighbors.set(conn.to, conn.time);
+    if (!existing || time < existing) {
+      fromNode.neighbors.set(conn.to, time);
     }
+
+    const gtfsTimeRev = gtfsSegmentTimes[`${conn.to}|${conn.from}`];
+    const gtfsTransferRev = gtfsTransferTimes[`${conn.to}|${conn.from}`];
+    const timeRev = gtfsTimeRev ?? gtfsTransferRev ?? conn.time;
+
     const existingReverse = toNode.neighbors.get(conn.from);
-    if (!existingReverse || conn.time < existingReverse) {
-      toNode.neighbors.set(conn.from, conn.time);
+    if (!existingReverse || timeRev < existingReverse) {
+      toNode.neighbors.set(conn.from, timeRev);
     }
   }
 }
