@@ -10,7 +10,7 @@ Enter multiple departure addresses, and the app computes the best place to meet 
 
 - **Interactive map** — Click on the map or search addresses to add departure points
 - **Real GTFS travel times** — Inter-station times and transfer durations extracted from the official IDFM GTFS dataset (1292 segments, 474 transfers), with realistic dwell time, boarding penalty, and transfer wait times
-- **Transit-aware routing** — Precomputed all-pairs shortest paths on a graph of 750+ stations: metro (lines 1–14, 3bis, 7bis), RER (A/B/C/D/E), and tramway (T1–T13), with spatial index for fast nearest-station lookup
+- **Line-aware routing** — Expanded graph where each node is a (station, line) pair, so line switches at shared stations incur a realistic transfer cost. Precomputed all-pairs shortest paths on 750+ stations across metro (1–14, 3bis, 7bis), RER (A–E), and tramway (T1–T13), with spatial index for fast nearest-station lookup
 - **Bike mode** — Toggle bike availability per participant (cycling at ~10 km/h effective with urban detour factor); the optimizer picks the fastest option between transit, walking, and cycling
 - **Google Maps itinerary** — Each departure point links to Google Maps transit/cycling directions to the optimal meeting point
 - **Heatmap visualization** — Canvas overlay showing travel time across Paris with a non-linear color scale (green = best, red/purple = worst)
@@ -30,7 +30,7 @@ Enter multiple departure addresses, and the app computes the best place to meet 
    - Coarse 30x30 grid to approximate the optimal zone
    - Fine 80x80 grid centered on the optimal + all departure points
 5. For each grid cell, travel time from every departure point is computed via precomputed all-pairs shortest paths (with walking/cycling to/from nearest stations)
-6. Edge weights come from GTFS real scheduled times when available (+ 30s dwell time per stop, 2 min boarding penalty, 2 min transfer wait), with static fallback
+6. Edge weights come from GTFS real scheduled times when available (+ 30s dwell time per stop, 2 min boarding penalty, 4 min intra-station line switch, 2 min inter-station transfer wait), with static fallback
 7. The optimal point minimizes `sqrt(sum(t_i^2))` (L2 norm)
 8. The displayed average time is the L1 mean (arithmetic average)
 
@@ -87,7 +87,7 @@ src/
     lines.ts               # Line definitions for visual rendering
     gtfs-times.ts          # Auto-generated GTFS travel times and transfers
   utils/
-    transitGraph.ts        # Graph construction, Dijkstra, travel time + bike
+    transitGraph.ts        # Line-aware graph, all-pairs Dijkstra, travel time + bike
     heatmap.ts             # Grid computation, L2 optimization
 scripts/
   extract-gtfs.mjs         # Parse raw GTFS data

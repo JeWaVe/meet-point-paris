@@ -1,10 +1,10 @@
 import { stations, connections } from '../data/stations';
 import type { Station } from '../data/stations';
+import { lines } from '../data/lines';
 import { gtfsSegmentTimes, gtfsTransferTimes } from '../data/gtfs-times';
 
-// === Index-based graph for performance ===
+// === Station indexing ===
 
-// Map station IDs to dense indices
 const stationIdToIndex = new Map<string, number>();
 const stationByIndex: Station[] = [];
 for (let i = 0; i < stations.length; i++) {
@@ -13,43 +13,144 @@ for (let i = 0; i < stations.length; i++) {
 }
 const N = stations.length;
 
-// Wait time penalty added to transfers (average wait for connecting train)
-const TRANSFER_WAIT_PENALTY = 2; // minutes
-// Dwell time at each intermediate station (doors open, not included in GTFS departure→arrival times)
-const DWELL_TIME = 0.5; // minutes (~30 seconds per stop)
+// === Line-aware expanded graph ===
+// Each node = (station, line) to model line-switching costs at shared stations
 
-// Adjacency list using arrays (index-based)
-const adjList: { to: number; time: number }[][] = new Array(N);
-for (let i = 0; i < N; i++) adjList[i] = [];
+// Timing constants
+const DWELL_TIME = 0.5;              // seconds at each stop (doors open)
+const INTRA_STATION_TRANSFER = 4;    // same station ID, different line (walk + wait)
+const INTER_STATION_TRANSFER_WAIT = 2; // different station IDs (added on top of GTFS walk time)
+const BOARDING_PENALTY = 2;          // entering transit (walk to platform + wait)
+
+// Step 1: Determine which lines each station is on (from line branches)
+const stationLineSet: Set<string>[] = new Array(N);
+for (let i = 0; i < N; i++) stationLineSet[i] = new Set();
+
+for (const line of lines) {
+  for (const branch of line.branches) {
+    for (const stationId of branch) {
+      const si = stationIdToIndex.get(stationId);
+      if (si !== undefined) stationLineSet[si].add(line.id);
+    }
+  }
+}
+
+// Step 2: Create expanded nodes (station, line) pairs
+const expandedNodes: { stationIdx: number; lineId: string }[] = [];
+const expandedIndex = new Map<string, number>(); // "stationIdx|lineId" -> expandedIdx
+const stationExpandedNodes: number[][] = new Array(N);
+
+for (let si = 0; si < N; si++) {
+  const lineSet = stationLineSet[si];
+  const indices: number[] = [];
+  if (lineSet.size === 0) {
+    // Station not on any line (shouldn't happen but handle gracefully)
+    const ei = expandedNodes.length;
+    expandedNodes.push({ stationIdx: si, lineId: '_none' });
+    expandedIndex.set(`${si}|_none`, ei);
+    indices.push(ei);
+  } else {
+    for (const lineId of lineSet) {
+      const ei = expandedNodes.length;
+      expandedNodes.push({ stationIdx: si, lineId });
+      expandedIndex.set(`${si}|${lineId}`, ei);
+      indices.push(ei);
+    }
+  }
+  stationExpandedNodes[si] = indices;
+}
+
+const EN = expandedNodes.length;
+
+// Default segment time by line type (fallback when no GTFS data)
+function defaultSegmentTime(lineId: string): number {
+  const line = lines.find(l => l.id === lineId);
+  if (!line) return 2;
+  return line.type === 'rer' ? 3 : 2;
+}
+
+// Step 3: Build expanded adjacency list
+const adjList: { to: number; time: number }[][] = new Array(EN);
+for (let i = 0; i < EN; i++) adjList[i] = [];
+
+// 3a: Segment edges from line branches (same line)
+for (const line of lines) {
+  for (const branch of line.branches) {
+    for (let i = 0; i < branch.length - 1; i++) {
+      const fromSi = stationIdToIndex.get(branch[i]);
+      const toSi = stationIdToIndex.get(branch[i + 1]);
+      if (fromSi === undefined || toSi === undefined) continue;
+
+      const fromEi = expandedIndex.get(`${fromSi}|${line.id}`);
+      const toEi = expandedIndex.get(`${toSi}|${line.id}`);
+      if (fromEi === undefined || toEi === undefined) continue;
+
+      const fromId = branch[i];
+      const toId = branch[i + 1];
+
+      const gtfsTime = gtfsSegmentTimes[`${fromId}|${toId}`];
+      const time = (gtfsTime ?? defaultSegmentTime(line.id)) + DWELL_TIME;
+
+      const gtfsTimeRev = gtfsSegmentTimes[`${toId}|${fromId}`];
+      const timeRev = (gtfsTimeRev ?? defaultSegmentTime(line.id)) + DWELL_TIME;
+
+      adjList[fromEi].push({ to: toEi, time });
+      adjList[toEi].push({ to: fromEi, time: timeRev });
+    }
+  }
+}
+
+// 3b: Intra-station transfers (same station ID, different lines)
+for (let si = 0; si < N; si++) {
+  const eis = stationExpandedNodes[si];
+  if (eis.length <= 1) continue;
+  for (let i = 0; i < eis.length; i++) {
+    for (let j = i + 1; j < eis.length; j++) {
+      adjList[eis[i]].push({ to: eis[j], time: INTRA_STATION_TRANSFER });
+      adjList[eis[j]].push({ to: eis[i], time: INTRA_STATION_TRANSFER });
+    }
+  }
+}
+
+// 3c: Inter-station transfers (different station IDs — from buildTransfers)
+// Build set of segment pairs to distinguish transfers from segments
+const segmentPairs = new Set<string>();
+for (const line of lines) {
+  for (const branch of line.branches) {
+    for (let i = 0; i < branch.length - 1; i++) {
+      segmentPairs.add(`${branch[i]}|${branch[i + 1]}`);
+      segmentPairs.add(`${branch[i + 1]}|${branch[i]}`);
+    }
+  }
+}
 
 for (const conn of connections) {
-  const fromIdx = stationIdToIndex.get(conn.from);
-  const toIdx = stationIdToIndex.get(conn.to);
-  if (fromIdx === undefined || toIdx === undefined) continue;
+  // Skip segment edges (already handled from line branches)
+  if (segmentPairs.has(`${conn.from}|${conn.to}`)) continue;
 
-  const gtfsTime = gtfsSegmentTimes[`${conn.from}|${conn.to}`];
+  const fromSi = stationIdToIndex.get(conn.from);
+  const toSi = stationIdToIndex.get(conn.to);
+  if (fromSi === undefined || toSi === undefined) continue;
+
   const gtfsTransfer = gtfsTransferTimes[`${conn.from}|${conn.to}`];
-  // Segment edges get dwell time, transfer edges get wait penalty
-  const isTransfer = gtfsTime === undefined && gtfsTransfer !== undefined;
-  const isSegment = gtfsTime !== undefined;
-  const time = (gtfsTime ?? gtfsTransfer ?? conn.time)
-    + (isTransfer ? TRANSFER_WAIT_PENALTY : 0)
-    + (isSegment ? DWELL_TIME : 0);
+  const time = (gtfsTransfer ?? conn.time) + INTER_STATION_TRANSFER_WAIT;
 
-  const gtfsTimeRev = gtfsSegmentTimes[`${conn.to}|${conn.from}`];
   const gtfsTransferRev = gtfsTransferTimes[`${conn.to}|${conn.from}`];
-  const isTransferRev = gtfsTimeRev === undefined && gtfsTransferRev !== undefined;
-  const isSegmentRev = gtfsTimeRev !== undefined;
-  const timeRev = (gtfsTimeRev ?? gtfsTransferRev ?? conn.time)
-    + (isTransferRev ? TRANSFER_WAIT_PENALTY : 0)
-    + (isSegmentRev ? DWELL_TIME : 0);
+  const timeRev = (gtfsTransferRev ?? conn.time) + INTER_STATION_TRANSFER_WAIT;
 
-  adjList[fromIdx].push({ to: toIdx, time });
-  adjList[toIdx].push({ to: fromIdx, time: timeRev });
+  // Connect all expanded nodes at source to all at destination
+  const fromEis = stationExpandedNodes[fromSi];
+  const toEis = stationExpandedNodes[toSi];
+  for (const fei of fromEis) {
+    for (const tei of toEis) {
+      adjList[fei].push({ to: tei, time });
+      adjList[tei].push({ to: fei, time: timeRev });
+    }
+  }
 }
 
 // Deduplicate adjacency lists (keep shortest edge per neighbor)
-for (let i = 0; i < N; i++) {
+for (let i = 0; i < EN; i++) {
   const best = new Map<number, number>();
   for (const e of adjList[i]) {
     const existing = best.get(e.to);
@@ -108,17 +209,16 @@ class MinHeap {
   }
 }
 
-// === All-pairs shortest paths (precomputed at module load) ===
+// === All-pairs shortest paths on expanded graph ===
 
-// Flat Float32Array: allPairs[from * N + to] = time in minutes (Infinity if unreachable)
-const allPairs = new Float32Array(N * N);
+const allPairs = new Float32Array(EN * EN);
 allPairs.fill(Infinity);
 
 function dijkstraFromIndex(source: number) {
-  const dist = new Float32Array(N);
+  const dist = new Float32Array(EN);
   dist.fill(Infinity);
   dist[source] = 0;
-  const visited = new Uint8Array(N);
+  const visited = new Uint8Array(EN);
   const pq = new MinHeap();
   pq.push(source, 0);
 
@@ -137,30 +237,42 @@ function dijkstraFromIndex(source: number) {
     }
   }
 
-  // Write row into allPairs
-  const offset = source * N;
-  for (let j = 0; j < N; j++) {
+  const offset = source * EN;
+  for (let j = 0; j < EN; j++) {
     allPairs[offset + j] = dist[j];
   }
 }
 
 // Precompute all-pairs at module init
-for (let i = 0; i < N; i++) {
+for (let i = 0; i < EN; i++) {
   dijkstraFromIndex(i);
+}
+
+// Best transit time between two original stations (min over all line-node pairs)
+function transitTimeBetween(fromStationIdx: number, toStationIdx: number): number {
+  let best = Infinity;
+  const fromEis = stationExpandedNodes[fromStationIdx];
+  const toEis = stationExpandedNodes[toStationIdx];
+  for (const fei of fromEis) {
+    const offset = fei * EN;
+    for (const tei of toEis) {
+      const t = allPairs[offset + tei];
+      if (t < best) best = t;
+    }
+  }
+  return best;
 }
 
 // === Spatial grid for fast nearest-station lookup ===
 
-// Paris area roughly: lat [48.7, 49.0], lng [2.1, 2.6]
 const SPATIAL_LAT_MIN = 48.7;
 const SPATIAL_LNG_MIN = 2.1;
 const SPATIAL_LAT_MAX = 49.0;
 const SPATIAL_LNG_MAX = 2.6;
-const SPATIAL_CELLS = 30; // 30x30 grid
+const SPATIAL_CELLS = 30;
 const SPATIAL_LAT_STEP = (SPATIAL_LAT_MAX - SPATIAL_LAT_MIN) / SPATIAL_CELLS;
 const SPATIAL_LNG_STEP = (SPATIAL_LNG_MAX - SPATIAL_LNG_MIN) / SPATIAL_CELLS;
 
-// Each cell contains indices of stations in that cell and neighbors
 const spatialGrid: number[][] = new Array(SPATIAL_CELLS * SPATIAL_CELLS);
 for (let i = 0; i < spatialGrid.length; i++) spatialGrid[i] = [];
 
@@ -170,7 +282,6 @@ function spatialCellIdx(lat: number, lng: number): { row: number; col: number } 
   return { row, col };
 }
 
-// Populate spatial grid
 for (let i = 0; i < N; i++) {
   const { row, col } = spatialCellIdx(stations[i].lat, stations[i].lng);
   spatialGrid[row * SPATIAL_CELLS + col].push(i);
@@ -193,12 +304,10 @@ export function haversineDistance(lat1: number, lng1: number, lat2: number, lng2
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-// Walking time in minutes (5 km/h)
 function walkingTime(distKm: number): number {
-  return (distKm / 5) * 60;
+  return (distKm * 1.3 / 5) * 60;
 }
 
-// Cycling time in minutes (~15 km/h, with 1.3x detour factor for urban streets)
 function cyclingTime(distKm: number): number {
   return (distKm * 1.5 / 15) * 60;
 }
@@ -212,14 +321,11 @@ export interface NearStation {
 // Find N nearest stations using spatial grid
 export function findNearestStations(lat: number, lng: number, n: number = 3): NearStation[] {
   const { row, col } = spatialCellIdx(lat, lng);
-
-  // Search expanding rings until we have enough candidates
   let candidates: { idx: number; dist: number }[] = [];
 
   for (let radius = 0; radius <= SPATIAL_CELLS; radius++) {
     for (let dr = -radius; dr <= radius; dr++) {
       for (let dc = -radius; dc <= radius; dc++) {
-        // Only process cells on the border of this ring (skip inner cells already processed)
         if (radius > 0 && Math.abs(dr) < radius && Math.abs(dc) < radius) continue;
         const r = row + dr;
         const c = col + dc;
@@ -230,13 +336,10 @@ export function findNearestStations(lat: number, lng: number, n: number = 3): Ne
         }
       }
     }
-    // If we have enough candidates and the closest station in the next ring would be
-    // farther than our nth-best, we can stop
     if (candidates.length >= n) {
       candidates.sort((a, b) => a.dist - b.dist);
       const nthBest = candidates[n - 1].dist;
-      // Minimum distance to next ring border (conservative)
-      const nextRingMinDist = radius * Math.min(SPATIAL_LAT_STEP, SPATIAL_LNG_STEP) * 111; // ~111 km per degree
+      const nextRingMinDist = radius * Math.min(SPATIAL_LAT_STEP, SPATIAL_LNG_STEP) * 111;
       if (nextRingMinDist > nthBest) break;
     }
   }
@@ -251,24 +354,18 @@ export function findNearestStations(lat: number, lng: number, n: number = 3): Ne
   }));
 }
 
-// Initial boarding penalty: time to enter station + average wait for first train
-const BOARDING_PENALTY = 2; // minutes
-
 // Calculate travel time from point A to point B using transit (and optionally bike)
 export function travelTime(fromLat: number, fromLng: number, toLat: number, toLng: number, hasBike: boolean = false): number {
-  // Direct walking distance
   const directDist = haversineDistance(fromLat, fromLng, toLat, toLng);
   const directWalk = walkingTime(directDist);
 
-  let bestTime = directWalk; // Walking is always an option
+  let bestTime = directWalk;
 
-  // Bike is an alternative if available
   if (hasBike) {
     const bikeTime = cyclingTime(directDist);
     if (bikeTime < bestTime) bestTime = bikeTime;
   }
 
-  // Always consider transit even for short distances
   const nearFrom = findNearestStations(fromLat, fromLng, 3);
   const nearTo = findNearestStations(toLat, toLng, 3);
 
@@ -276,7 +373,7 @@ export function travelTime(fromLat: number, fromLng: number, toLat: number, toLn
     if (from.walkTime > 20) continue;
     for (const to of nearTo) {
       if (to.walkTime > 20) continue;
-      const transitTime = allPairs[from.stationIdx * N + to.stationIdx];
+      const transitTime = transitTimeBetween(from.stationIdx, to.stationIdx);
       if (transitTime < Infinity) {
         const totalTime = from.walkTime + BOARDING_PENALTY + transitTime + to.walkTime;
         if (totalTime < bestTime) {
@@ -290,7 +387,6 @@ export function travelTime(fromLat: number, fromLng: number, toLat: number, toLn
 }
 
 // Optimized travel time using precomputed nearest stations for the "from" side
-// Used by heatmap where the from-point is fixed across many grid cells
 export function travelTimeFromCached(
   fromNearStations: NearStation[],
   fromLat: number, fromLng: number,
@@ -313,7 +409,7 @@ export function travelTimeFromCached(
     if (from.walkTime > 20) continue;
     for (const to of nearTo) {
       if (to.walkTime > 20) continue;
-      const transitTime = allPairs[from.stationIdx * N + to.stationIdx];
+      const transitTime = transitTimeBetween(from.stationIdx, to.stationIdx);
       if (transitTime < Infinity) {
         const totalTime = from.walkTime + BOARDING_PENALTY + transitTime + to.walkTime;
         if (totalTime < bestTime) {

@@ -163,13 +163,15 @@ function App() {
   }, [points]);
 
   // Auto-compute on load if points came from URL
+  // Auto-compute only if points were loaded from URL on startup
+  const [hasUrlPoints] = useState(() => window.location.hash.startsWith('#p='));
   const [autoComputed, setAutoComputed] = useState(false);
   useEffect(() => {
-    if (!autoComputed && points.length >= 2) {
+    if (hasUrlPoints && !autoComputed && points.length >= 2) {
       setAutoComputed(true);
       handleCompute();
     }
-  }, [autoComputed, points, handleCompute]);
+  }, [hasUrlPoints, autoComputed, points, handleCompute]);
 
   return (
     <div className="h-full flex">
