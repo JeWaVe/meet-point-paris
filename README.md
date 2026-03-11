@@ -11,7 +11,7 @@ Enter multiple departure addresses, and the app computes the best place to meet 
 | City | Transit network | Data source |
 |------|----------------|-------------|
 | **Paris** | Metro (1–14, 3bis, 7bis), RER (A–E), Tramway (T1–T13) — 750+ stations | IDFM GTFS |
-| **Toulouse** | Metro (A, B), Tramway (T1) — 64 stations | Tisséo GTFS |
+| **Toulouse** | Metro (A, B), Tramway (T1), Téléphérique (Téléo) — 66 stations | Tisséo GTFS |
 
 Each city has its own lazy-loaded data bundle (stations, lines, GTFS times), so only the selected city's data is downloaded.
 

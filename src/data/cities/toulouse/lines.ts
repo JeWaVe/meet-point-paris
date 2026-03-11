@@ -35,4 +35,8 @@ export const lines: LineDefinition[] = [
       "t1_beauzelle", "t1_aeroconstellation", "t1_meett",
     ]],
   },
+  {
+    id: "Téléo", name: "Téléo", color: "#9B2583", type: "cable",
+    branches: [["mb_ups", "teleo_rangueil", "teleo_oncopole"]],
+  },
 ];

@@ -42,8 +42,13 @@ export const stations: Station[] = [
   { id: "mb_saouzelong", name: "Saouzelong", lat: 43.5797, lng: 1.4591, lines: ["B"] },
   { id: "mb_rangueil", name: "Rangueil", lat: 43.5747, lng: 1.4619, lines: ["B"] },
   { id: "mb_faculte_pharma", name: "Faculté de Pharmacie", lat: 43.5681, lng: 1.4645, lines: ["B"] },
-  { id: "mb_ups", name: "Université Paul Sabatier", lat: 43.5609, lng: 1.4633, lines: ["B"] },
+  { id: "mb_ups", name: "Université Paul Sabatier", lat: 43.5602, lng: 1.4646, lines: ["B", "Téléo"] },
   { id: "mb_ramonville", name: "Ramonville", lat: 43.5558, lng: 1.4764, lines: ["B"] },
+
+  // === TELEO (télécabine) ===
+  // UPS: shared with Ligne B (mb_ups)
+  { id: "teleo_rangueil", name: "Hôpital Rangueil", lat: 43.5583, lng: 1.4530, lines: ["Téléo"] },
+  { id: "teleo_oncopole", name: "Oncopole", lat: 43.5543, lng: 1.4283, lines: ["Téléo"] },
 
   // === TRAMWAY T1 ===
   // Palais de Justice: shared with Ligne B (mb_palais_justice)
@@ -117,6 +122,14 @@ function buildLineConnections(): Connection[] {
   for (let i = 0; i < lineT1.length - 1; i++) {
     conns.push({ from: lineT1[i], to: lineT1[i + 1], time: 2 });
     conns.push({ from: lineT1[i + 1], to: lineT1[i], time: 2 });
+  }
+
+  // Téléo (télécabine) — ~5 min UPS→Rangueil, ~8 min Rangueil→Oncopole
+  const teleo = ["mb_ups", "teleo_rangueil", "teleo_oncopole"];
+  const teleoTimes = [5, 8];
+  for (let i = 0; i < teleo.length - 1; i++) {
+    conns.push({ from: teleo[i], to: teleo[i + 1], time: teleoTimes[i] });
+    conns.push({ from: teleo[i + 1], to: teleo[i], time: teleoTimes[i] });
   }
 
   return conns;
