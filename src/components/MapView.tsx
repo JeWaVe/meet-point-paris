@@ -205,6 +205,7 @@ interface Props {
   optimalAddress: string | null;
   onMapClick: (lat: number, lng: number) => void;
   showTransit: boolean;
+  showHeatmap: boolean;
   nearbyPlaces: NearbyPlace[];
   stations: Station[];
   lines: LineDefinition[];
@@ -214,7 +215,7 @@ interface Props {
   minZoom: number;
 }
 
-export default function MapView({ points, heatmapResult, optimalAddress, onMapClick, showTransit, nearbyPlaces, stations, lines, center, defaultZoom, maxBounds, minZoom }: Props) {
+export default function MapView({ points, heatmapResult, optimalAddress, onMapClick, showTransit, showHeatmap, nearbyPlaces, stations, lines, center, defaultZoom, maxBounds, minZoom }: Props) {
   return (
     <MapContainer
       center={center}
@@ -235,7 +236,7 @@ export default function MapView({ points, heatmapResult, optimalAddress, onMapCl
       {/* Transit lines and stations layer (below heatmap when heatmap is active) */}
       <TransitLayer showLines={showTransit} showStations={showTransit} stations={stations} lines={lines} />
 
-      <CanvasHeatmapLayer heatmapResult={heatmapResult} />
+      <CanvasHeatmapLayer heatmapResult={showHeatmap ? heatmapResult : null} />
 
       {points.map((p, i) => (
         <Marker key={p.id} position={[p.lat, p.lng]} icon={getUserIcon(i)}>
@@ -247,21 +248,6 @@ export default function MapView({ points, heatmapResult, optimalAddress, onMapCl
           </Popup>
         </Marker>
       ))}
-
-      {heatmapResult && heatmapResult.points.length > 0 && (
-        <Marker
-          position={[heatmapResult.optimal.lat, heatmapResult.optimal.lng]}
-          icon={optimalIcon}
-        >
-          <Popup>
-            <div className="text-sm">
-              <strong>Point de rencontre optimal</strong><br />
-              {optimalAddress || 'Calcul...'}<br />
-              Temps moyen : {Math.round(heatmapResult.optimal.time)} min
-            </div>
-          </Popup>
-        </Marker>
-      )}
 
       {nearbyPlaces.map(place => {
         const cat = getPlaceCategory(place.types);
@@ -283,6 +269,22 @@ export default function MapView({ points, heatmapResult, optimalAddress, onMapCl
         </Marker>
         );
       })}
+
+      {heatmapResult && heatmapResult.points.length > 0 && (
+        <Marker
+          position={[heatmapResult.optimal.lat, heatmapResult.optimal.lng]}
+          icon={optimalIcon}
+          zIndexOffset={1000}
+        >
+          <Popup>
+            <div className="text-sm">
+              <strong>Point de rencontre optimal</strong><br />
+              {optimalAddress || 'Calcul...'}<br />
+              Temps moyen : {Math.round(heatmapResult.optimal.time)} min
+            </div>
+          </Popup>
+        </Marker>
+      )}
     </MapContainer>
   );
 }

@@ -24,6 +24,8 @@ interface Props {
   onToggle: () => void;
   showTransit: boolean;
   onToggleTransit: () => void;
+  showHeatmap: boolean;
+  onToggleHeatmap: () => void;
   onToggleBike: (id: string) => void;
   onClearAll: () => void;
   getShareUrl: () => string;
@@ -34,7 +36,7 @@ interface Props {
 
 export default function Sidebar({
   points, onAddPoint, onRemovePoint, onCompute, computing,
-  optimalAddress, optimalTime, optimalLat, optimalLng, travelTimes, isOpen, onToggle, showTransit, onToggleTransit, onToggleBike, onClearAll, getShareUrl, nearbyPlaces, onBack, cityName,
+  optimalAddress, optimalTime, optimalLat, optimalLng, travelTimes, isOpen, onToggle, showTransit, onToggleTransit, showHeatmap, onToggleHeatmap, onToggleBike, onClearAll, getShareUrl, nearbyPlaces, onBack, cityName,
 }: Props) {
   const [shareOpen, setShareOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -134,8 +136,8 @@ export default function Sidebar({
             </p>
           </div>
 
-          {/* Transit toggle */}
-          <div className="px-3 md:px-4 py-2 md:py-3 border-b border-slate-700">
+          {/* Display toggles */}
+          <div className="px-3 md:px-4 py-2 md:py-3 border-b border-slate-700 space-y-2">
             <label className="flex items-center gap-3 cursor-pointer">
               <div className="relative">
                 <input
@@ -149,6 +151,21 @@ export default function Sidebar({
               </div>
               <span className="text-sm text-slate-300">
                 Afficher lignes et stations
+              </span>
+            </label>
+            <label className="flex items-center gap-3 cursor-pointer">
+              <div className="relative">
+                <input
+                  type="checkbox"
+                  checked={showHeatmap}
+                  onChange={onToggleHeatmap}
+                  className="sr-only peer"
+                />
+                <div className="w-9 h-5 bg-slate-600 rounded-full peer-checked:bg-indigo-600 transition-colors" />
+                <div className="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-4" />
+              </div>
+              <span className="text-sm text-slate-300">
+                Zones de temps de trajet
               </span>
             </label>
           </div>

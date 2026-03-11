@@ -54,6 +54,7 @@ export default function CityView({ city, graph, onBack }: Props) {
   const [travelTimes, setTravelTimes] = useState<Map<string, number>>(new Map());
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showTransit, setShowTransit] = useState(true);
+  const [showHeatmap, setShowHeatmap] = useState(false);
   const [nearbyPlaces, setNearbyPlaces] = useState<NearbyPlace[]>([]);
 
   // Update URL hash when points change (use replaceState to avoid popstate triggers)
@@ -208,6 +209,8 @@ export default function CityView({ city, graph, onBack }: Props) {
         onToggle={() => setSidebarOpen(!sidebarOpen)}
         showTransit={showTransit}
         onToggleTransit={() => setShowTransit(!showTransit)}
+        showHeatmap={showHeatmap}
+        onToggleHeatmap={() => setShowHeatmap(!showHeatmap)}
         onToggleBike={toggleBike}
         onClearAll={clearAll}
         getShareUrl={getShareUrl}
@@ -219,6 +222,7 @@ export default function CityView({ city, graph, onBack }: Props) {
         <MapView
           points={points}
           heatmapResult={heatmapResult}
+          showHeatmap={showHeatmap}
           optimalAddress={optimalAddress}
           onMapClick={handleMapClick}
           showTransit={showTransit}
