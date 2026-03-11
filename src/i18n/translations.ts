@@ -81,6 +81,17 @@ const fr = {
 
   // Transit descriptions
   underground: 'Métro souterrain (Tube)',
+
+  // Legal
+  legalNotice: 'Mentions légales',
+  legalPublisher: 'Éditeur',
+  legalDirector: 'Directeur de la publication',
+  legalHost: 'Hébergement',
+  legalData: 'Données personnelles',
+  legalDataDesc: "Ce site ne collecte aucune donnée personnelle. Aucun cookie n'est déposé. Les adresses saisies sont traitées uniquement côté client et ne sont jamais transmises à nos serveurs.",
+  legalAnalytics: "L'analyse d'audience est réalisée par Umami Cloud, un outil respectueux de la vie privée, sans cookies et conforme au RGPD.",
+  legalIP: 'Propriété intellectuelle',
+  legalIPDesc: "Le contenu de ce site est protégé par la licence Business Source License 1.1. Toute reproduction à des fins commerciales est interdite sans autorisation préalable de l'éditeur.",
 };
 
 type TranslationKeys = typeof fr;
@@ -140,6 +151,15 @@ const en: TranslationKeys = {
   unitedKingdom: 'United Kingdom',
   london: 'London',
   underground: 'Underground (Tube)',
+  legalNotice: 'Legal notice',
+  legalPublisher: 'Publisher',
+  legalDirector: 'Publication director',
+  legalHost: 'Hosting',
+  legalData: 'Personal data',
+  legalDataDesc: 'This site does not collect any personal data. No cookies are used. Addresses entered are processed client-side only and are never sent to our servers.',
+  legalAnalytics: 'Analytics are provided by Umami Cloud, a privacy-friendly, cookie-free, GDPR-compliant tool.',
+  legalIP: 'Intellectual property',
+  legalIPDesc: 'The content of this site is protected under the Business Source License 1.1. Any commercial reproduction is prohibited without prior authorization from the publisher.',
 };
 
 const de: TranslationKeys = {
@@ -197,6 +217,15 @@ const de: TranslationKeys = {
   unitedKingdom: 'Vereinigtes Königreich',
   london: 'London',
   underground: 'U-Bahn (Tube)',
+  legalNotice: 'Impressum',
+  legalPublisher: 'Herausgeber',
+  legalDirector: 'Verantwortlicher',
+  legalHost: 'Hosting',
+  legalData: 'Datenschutz',
+  legalDataDesc: 'Diese Website erhebt keine personenbezogenen Daten. Es werden keine Cookies verwendet. Eingegebene Adressen werden nur clientseitig verarbeitet und nie an unsere Server übermittelt.',
+  legalAnalytics: 'Die Webanalyse erfolgt über Umami Cloud, ein datenschutzfreundliches, cookiefreies und DSGVO-konformes Tool.',
+  legalIP: 'Geistiges Eigentum',
+  legalIPDesc: 'Der Inhalt dieser Website ist durch die Business Source License 1.1 geschützt. Jede kommerzielle Vervielfältigung ist ohne vorherige Genehmigung des Herausgebers untersagt.',
 };
 
 const it: TranslationKeys = {
@@ -254,6 +283,15 @@ const it: TranslationKeys = {
   unitedKingdom: 'Regno Unito',
   london: 'Londra',
   underground: 'Metropolitana (Tube)',
+  legalNotice: 'Note legali',
+  legalPublisher: 'Editore',
+  legalDirector: 'Direttore della pubblicazione',
+  legalHost: 'Hosting',
+  legalData: 'Dati personali',
+  legalDataDesc: 'Questo sito non raccoglie alcun dato personale. Non vengono utilizzati cookie. Gli indirizzi inseriti vengono elaborati solo lato client e non vengono mai inviati ai nostri server.',
+  legalAnalytics: "L'analisi del traffico è fornita da Umami Cloud, uno strumento rispettoso della privacy, senza cookie e conforme al GDPR.",
+  legalIP: 'Proprietà intellettuale',
+  legalIPDesc: "Il contenuto di questo sito è protetto dalla Business Source License 1.1. Qualsiasi riproduzione commerciale è vietata senza previa autorizzazione dell'editore.",
 };
 
 const es: TranslationKeys = {
@@ -311,6 +349,15 @@ const es: TranslationKeys = {
   unitedKingdom: 'Reino Unido',
   london: 'Londres',
   underground: 'Metro subterráneo (Tube)',
+  legalNotice: 'Aviso legal',
+  legalPublisher: 'Editor',
+  legalDirector: 'Director de publicación',
+  legalHost: 'Alojamiento',
+  legalData: 'Datos personales',
+  legalDataDesc: 'Este sitio no recopila ningún dato personal. No se utilizan cookies. Las direcciones introducidas se procesan únicamente en el cliente y nunca se envían a nuestros servidores.',
+  legalAnalytics: 'El análisis de tráfico es proporcionado por Umami Cloud, una herramienta respetuosa con la privacidad, sin cookies y conforme al RGPD.',
+  legalIP: 'Propiedad intelectual',
+  legalIPDesc: 'El contenido de este sitio está protegido por la Business Source License 1.1. Queda prohibida toda reproducción comercial sin autorización previa del editor.',
 };
 
 export const translations: Record<Locale, TranslationKeys> = { fr, en, de, it, es };

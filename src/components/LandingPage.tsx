@@ -5,6 +5,7 @@ import LanguageSelector from './LanguageSelector';
 
 interface Props {
   onSelectCity: (city: CityDef) => void;
+  onLegal: () => void;
 }
 
 const countryKeys: Record<string, keyof typeof import('../i18n/translations').translations.fr> = {
@@ -20,7 +21,7 @@ const descriptionKeys: Record<string, keyof typeof import('../i18n/translations'
   'london': 'underground',
 };
 
-export default function LandingPage({ onSelectCity }: Props) {
+export default function LandingPage({ onSelectCity, onLegal }: Props) {
   const { t } = useI18n();
   const tt = t as Record<string, string>;
   return (
@@ -94,9 +95,13 @@ export default function LandingPage({ onSelectCity }: Props) {
       </main>
 
       {/* Footer */}
-      <footer className="py-6 text-center text-gray-600 text-sm">
+      <footer className="py-6 text-center text-gray-600 text-sm flex items-center justify-center gap-4">
         <a href="https://github.com/JeWaVe/meet-point-paris" target="_blank" rel="noopener noreferrer" className="hover:text-gray-400 transition-colors">
           GitHub
+        </a>
+        <span>·</span>
+        <a href="/legal" onClick={(e) => { e.preventDefault(); onLegal(); }} className="hover:text-gray-400 transition-colors cursor-pointer">
+          {t.legalNotice}
         </a>
       </footer>
     </div>

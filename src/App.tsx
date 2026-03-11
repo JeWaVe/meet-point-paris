@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import LandingPage from './components/LandingPage';
 import CityView from './components/CityView';
+import LegalNotice from './components/LegalNotice';
 import { TransitGraph } from './utils/transitGraph';
 import { getCityBySlug } from './data/cities';
 import type { CityDef } from './data/cities';
@@ -70,23 +71,37 @@ function App() {
   const navigateHome = useCallback(() => {
     setCitySlug(null);
     setCity(null);
+    setShowLegal(false);
     history.pushState(null, '', '/');
+  }, []);
+
+  const [showLegal, setShowLegal] = useState(() => parseRoute().slug === 'legal');
+
+  const navigateToLegal = useCallback(() => {
+    setShowLegal(true);
+    history.pushState(null, '', '/legal');
   }, []);
 
   // Handle browser back/forward
   useEffect(() => {
     const onPopState = () => {
       const { slug } = parseRoute();
-      setCitySlug(slug);
-      setCity(slug ? getCityBySlug(slug) ?? null : null);
+      setShowLegal(slug === 'legal');
+      setCitySlug(slug === 'legal' ? null : slug);
+      setCity(slug && slug !== 'legal' ? getCityBySlug(slug) ?? null : null);
     };
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
   }, []);
 
+  // Legal notice page
+  if (showLegal) {
+    return <LegalNotice onBack={navigateHome} />;
+  }
+
   // Landing page
   if (!city) {
-    return <LandingPage onSelectCity={navigateToCity} />;
+    return <LandingPage onSelectCity={navigateToCity} onLegal={navigateToLegal} />;
   }
 
   // Loading city data
