@@ -28,11 +28,13 @@ interface Props {
   onClearAll: () => void;
   getShareUrl: () => string;
   nearbyPlaces: NearbyPlace[];
+  onBack: () => void;
+  cityName: string;
 }
 
 export default function Sidebar({
   points, onAddPoint, onRemovePoint, onCompute, computing,
-  optimalAddress, optimalTime, optimalLat, optimalLng, travelTimes, isOpen, onToggle, showTransit, onToggleTransit, onToggleBike, onClearAll, getShareUrl, nearbyPlaces,
+  optimalAddress, optimalTime, optimalLat, optimalLng, travelTimes, isOpen, onToggle, showTransit, onToggleTransit, onToggleBike, onClearAll, getShareUrl, nearbyPlaces, onBack, cityName,
 }: Props) {
   const [shareOpen, setShareOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -81,11 +83,22 @@ export default function Sidebar({
         <div className="md:h-full flex flex-col overflow-hidden">
           {/* Header - desktop only */}
           <div className="hidden md:block p-5 border-b border-slate-700">
-            <h1 className="text-xl font-bold text-white flex items-center gap-2">
-              <span className="text-2xl">📍</span> WhereToMeet
-            </h1>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={onBack}
+                className="text-slate-400 hover:text-white transition-colors p-1 -ml-1 rounded"
+                title="Changer de ville"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <h1 className="text-xl font-bold text-white flex items-center gap-2">
+                <span className="text-2xl">📍</span> WhereToMeet
+              </h1>
+            </div>
             <p className="text-slate-400 text-sm mt-1">
-              Trouvez le lieu de rendez-vous idéal à Paris
+              Trouvez le lieu de rendez-vous idéal — {cityName}
             </p>
           </div>
 

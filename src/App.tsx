@@ -1,49 +1,56 @@
-import { useState, useCallback, useEffect, useMemo } from 'react';
-import MapView from './components/MapView';
-import Sidebar from './components/Sidebar';
-import { computeHeatmap } from './utils/heatmap';
+import { useState, useEffect, useCallback } from 'react';
+import LandingPage from './components/LandingPage';
+import CityView from './components/CityView';
 import { TransitGraph } from './utils/transitGraph';
-import { searchNearbyPlaces } from './utils/places';
-import type { NearbyPlace } from './utils/places';
-import type { SelectedPoint, HeatmapResult } from './utils/heatmap';
 import { getCityBySlug } from './data/cities';
 import type { CityDef } from './data/cities';
 
 const DEFAULT_CITY = 'paris';
 
-function encodePoints(pts: SelectedPoint[]): string {
-  return pts.map(p => `${p.lat.toFixed(5)},${p.lng.toFixed(5)},${p.hasBike ? '1' : '0'},${encodeURIComponent(p.address)}`).join('|');
-}
-
-function decodePoints(hash: string): SelectedPoint[] {
-  if (!hash) return [];
-  try {
-    return hash.split('|').map(segment => {
-      const [lat, lng, bike, ...rest] = segment.split(',');
-      const address = decodeURIComponent(rest.join(','));
-      return {
-        id: `${Date.now()}_${Math.random().toString(36).slice(2)}`,
-        lat: parseFloat(lat),
-        lng: parseFloat(lng),
-        address,
-        hasBike: bike === '1',
-      };
-    }).filter(p => !isNaN(p.lat) && !isNaN(p.lng));
-  } catch {
-    return [];
+function parseRoute(): { slug: string | null } {
+  // Handle GitHub Pages 404.html SPA redirect
+  const params = new URLSearchParams(window.location.search);
+  const redirect = params.get('redirect');
+  if (redirect) {
+    const decoded = decodeURIComponent(redirect);
+    // Restore the original URL without reload
+    const hashIdx = decoded.indexOf('#');
+    const pathPart = hashIdx >= 0 ? decoded.slice(0, hashIdx) : decoded;
+    const hashPart = hashIdx >= 0 ? decoded.slice(hashIdx) : '';
+    history.replaceState(null, '', pathPart + hashPart);
+    const slug = pathPart.replace(/^\/+|\/+$/g, '');
+    return { slug: slug || null };
   }
+
+  const path = window.location.pathname.replace(/^\/+|\/+$/g, '');
+
+  // Backward compat: bare /#p=... → Paris
+  if (!path && window.location.hash.startsWith('#p=')) {
+    return { slug: DEFAULT_CITY };
+  }
+
+  if (!path) return { slug: null };
+
+  return { slug: path };
 }
 
 function App() {
-  const city = useMemo<CityDef>(() => getCityBySlug(DEFAULT_CITY)!, []);
-
+  const [citySlug, setCitySlug] = useState<string | null>(() => parseRoute().slug);
+  const [city, setCity] = useState<CityDef | null>(() =>
+    citySlug ? getCityBySlug(citySlug) ?? null : null
+  );
   const [graph, setGraph] = useState<TransitGraph | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  // Load city data on mount
+  // Load city data when city changes
   useEffect(() => {
+    if (!city) {
+      setGraph(null);
+      return;
+    }
     let cancelled = false;
     setLoading(true);
+    setGraph(null);
     city.load().then(data => {
       if (cancelled) return;
       setGraph(new TransitGraph(data));
@@ -52,158 +59,35 @@ function App() {
     return () => { cancelled = true; };
   }, [city]);
 
-  const [points, setPoints] = useState<SelectedPoint[]>(() => {
-    const hash = window.location.hash.slice(1);
-    if (hash.startsWith('p=')) {
-      return decodePoints(hash.slice(2));
-    }
-    return [];
-  });
-  const [heatmapResult, setHeatmapResult] = useState<HeatmapResult | null>(null);
-  const [computing, setComputing] = useState(false);
-  const [optimalAddress, setOptimalAddress] = useState<string | null>(null);
-  const [optimalTime, setOptimalTime] = useState<number | null>(null);
-  const [optimalLat, setOptimalLat] = useState<number | null>(null);
-  const [optimalLng, setOptimalLng] = useState<number | null>(null);
-  const [travelTimes, setTravelTimes] = useState<Map<string, number>>(new Map());
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [showTransit, setShowTransit] = useState(true);
-  const [nearbyPlaces, setNearbyPlaces] = useState<NearbyPlace[]>([]);
+  const navigateToCity = useCallback((c: CityDef) => {
+    setCitySlug(c.slug);
+    setCity(c);
+    history.pushState(null, '', `/${c.slug}`);
+  }, []);
 
-  // Update URL hash when points change
+  const navigateHome = useCallback(() => {
+    setCitySlug(null);
+    setCity(null);
+    history.pushState(null, '', '/');
+  }, []);
+
+  // Handle browser back/forward
   useEffect(() => {
-    if (points.length > 0) {
-      window.location.hash = `p=${encodePoints(points)}`;
-    } else {
-      history.replaceState(null, '', window.location.pathname);
-    }
-  }, [points]);
-
-  const getShareUrl = useCallback(() => {
-    const base = window.location.origin + window.location.pathname;
-    if (points.length === 0) return base;
-    return `${base}#p=${encodePoints(points)}`;
-  }, [points]);
-
-  const addPoint = useCallback((lat: number, lng: number, address: string) => {
-    const newPoint: SelectedPoint = {
-      id: `${Date.now()}_${Math.random().toString(36).slice(2)}`,
-      lat,
-      lng,
-      address,
-      hasBike: false,
+    const onPopState = () => {
+      const { slug } = parseRoute();
+      setCitySlug(slug);
+      setCity(slug ? getCityBySlug(slug) ?? null : null);
     };
-    setPoints(prev => [...prev, newPoint]);
-    setHeatmapResult(null);
-    setOptimalAddress(null);
-    setOptimalTime(null);
-    setOptimalLat(null);
-    setOptimalLng(null);
-    setTravelTimes(new Map());
-    setNearbyPlaces([]);
-    setSidebarOpen(false); // Close bottom sheet on mobile after adding point
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
   }, []);
 
-  const handleMapClick = useCallback(async (lat: number, lng: number) => {
-    let address = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-    try {
-      const res = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18`
-      );
-      const data = await res.json();
-      if (data.display_name) {
-        address = data.display_name.split(',').slice(0, 2).join(',');
-      }
-    } catch {
-      // Keep coordinate-based address
-    }
-    addPoint(lat, lng, address);
-  }, [addPoint]);
+  // Landing page
+  if (!city) {
+    return <LandingPage onSelectCity={navigateToCity} />;
+  }
 
-  const removePoint = useCallback((id: string) => {
-    setPoints(prev => prev.filter(p => p.id !== id));
-    setHeatmapResult(null);
-    setOptimalAddress(null);
-    setOptimalTime(null);
-    setOptimalLat(null);
-    setOptimalLng(null);
-    setTravelTimes(new Map());
-    setNearbyPlaces([]);
-  }, []);
-
-  const toggleBike = useCallback((id: string) => {
-    setPoints(prev => prev.map(p => p.id === id ? { ...p, hasBike: !p.hasBike } : p));
-    setHeatmapResult(null);
-    setOptimalAddress(null);
-    setOptimalTime(null);
-    setOptimalLat(null);
-    setOptimalLng(null);
-    setTravelTimes(new Map());
-    setNearbyPlaces([]);
-  }, []);
-
-  const clearAll = useCallback(() => {
-    setPoints([]);
-    setHeatmapResult(null);
-    setOptimalAddress(null);
-    setOptimalTime(null);
-    setOptimalLat(null);
-    setOptimalLng(null);
-    setTravelTimes(new Map());
-    setNearbyPlaces([]);
-  }, []);
-
-  const handleCompute = useCallback(async () => {
-    if (points.length < 2 || !graph) return;
-
-    setComputing(true);
-
-    setTimeout(async () => {
-      try {
-        const result = computeHeatmap(points, graph);
-        setHeatmapResult(result);
-
-        // Compute individual travel times to optimal
-        const times = new Map<string, number>();
-        let totalTime = 0;
-        for (const p of points) {
-          const t = graph.travelTime(p.lat, p.lng, result.optimal.lat, result.optimal.lng, p.hasBike);
-          times.set(p.id, t);
-          totalTime += t;
-        }
-        setTravelTimes(times);
-        setOptimalTime(totalTime / points.length);
-        setOptimalLat(result.optimal.lat);
-        setOptimalLng(result.optimal.lng);
-
-        try {
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${result.optimal.lat}&lon=${result.optimal.lng}&zoom=18`
-          );
-          const data = await res.json();
-          setOptimalAddress(data.display_name?.split(',').slice(0, 3).join(',') || 'Point optimal');
-        } catch {
-          setOptimalAddress(`${result.optimal.lat.toFixed(4)}, ${result.optimal.lng.toFixed(4)}`);
-        }
-
-        // Fetch nearby restaurants/cafés/bars
-        searchNearbyPlaces(result.optimal.lat, result.optimal.lng).then(setNearbyPlaces).catch(() => {});
-      } finally {
-        setComputing(false);
-      }
-    }, 50);
-  }, [points, graph]);
-
-  // Auto-compute on load if points came from URL
-  const [hasUrlPoints] = useState(() => window.location.hash.startsWith('#p='));
-  const [autoComputed, setAutoComputed] = useState(false);
-  useEffect(() => {
-    if (hasUrlPoints && !autoComputed && points.length >= 2 && graph) {
-      setAutoComputed(true);
-      handleCompute();
-    }
-  }, [hasUrlPoints, autoComputed, points, handleCompute, graph]);
-
+  // Loading city data
   if (loading || !graph) {
     return (
       <div className="h-full flex items-center justify-center bg-gray-900 text-white">
@@ -215,46 +99,7 @@ function App() {
     );
   }
 
-  return (
-    <div className="h-full flex">
-      <Sidebar
-        points={points}
-        onAddPoint={addPoint}
-        onRemovePoint={removePoint}
-        onCompute={handleCompute}
-        computing={computing}
-        optimalAddress={optimalAddress}
-        optimalTime={optimalTime}
-        optimalLat={optimalLat}
-        optimalLng={optimalLng}
-        travelTimes={travelTimes}
-        isOpen={sidebarOpen}
-        onToggle={() => setSidebarOpen(!sidebarOpen)}
-        showTransit={showTransit}
-        onToggleTransit={() => setShowTransit(!showTransit)}
-        onToggleBike={toggleBike}
-        onClearAll={clearAll}
-        getShareUrl={getShareUrl}
-        nearbyPlaces={nearbyPlaces}
-      />
-      <div className="flex-1 relative">
-        <MapView
-          points={points}
-          heatmapResult={heatmapResult}
-          optimalAddress={optimalAddress}
-          onMapClick={handleMapClick}
-          showTransit={showTransit}
-          nearbyPlaces={nearbyPlaces}
-          stations={graph.stations}
-          lines={graph.lines}
-          center={city.center}
-          defaultZoom={city.defaultZoom}
-          maxBounds={city.maxBounds}
-          minZoom={city.minZoom}
-        />
-      </div>
-    </div>
-  );
+  return <CityView key={city.slug} city={city} graph={graph} onBack={navigateHome} />;
 }
 
 export default App;
