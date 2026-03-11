@@ -7,8 +7,22 @@ interface Props {
   onSelectCity: (city: CityDef) => void;
 }
 
+const countryKeys: Record<string, keyof typeof import('../i18n/translations').translations.fr> = {
+  'France': 'france',
+  'United Kingdom': 'unitedKingdom',
+};
+
+const cityNameKeys: Record<string, keyof typeof import('../i18n/translations').translations.fr> = {
+  'london': 'london',
+};
+
+const descriptionKeys: Record<string, keyof typeof import('../i18n/translations').translations.fr> = {
+  'london': 'underground',
+};
+
 export default function LandingPage({ onSelectCity }: Props) {
   const { t } = useI18n();
+  const tt = t as Record<string, string>;
   return (
     <div className="min-h-full bg-gray-950 text-white flex flex-col">
       {/* Header */}
@@ -40,15 +54,19 @@ export default function LandingPage({ onSelectCity }: Props) {
                 <div className="flex items-start justify-between">
                   <div>
                     <h3 className="text-xl font-semibold group-hover:text-indigo-400 transition-colors">
-                      {city.name}
+                      {cityNameKeys[city.slug] ? tt[cityNameKeys[city.slug]] : city.name}
                     </h3>
-                    <p className="text-gray-500 text-sm mt-0.5">{t.france}</p>
+                    <p className="text-gray-500 text-sm mt-0.5">{
+                      tt[countryKeys[city.country]] || city.country
+                    }</p>
                   </div>
                   <span className="text-2xl opacity-80 group-hover:scale-110 transition-transform">
                     {city.transitTypes.includes('metro') ? '🚇' : '🚊'}
                   </span>
                 </div>
-                <p className="text-gray-400 text-sm mt-3">{city.description}</p>
+                <p className="text-gray-400 text-sm mt-3">{
+                  descriptionKeys[city.slug] ? tt[descriptionKeys[city.slug]] : city.description
+                }</p>
                 <div className="mt-4 flex items-center text-indigo-400 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
                   {t.openMap}
                   <svg className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -72,6 +72,25 @@ export const cities: CityDef[] = [
       return { stations, connections, lines, gtfsSegmentTimes, gtfsTransferTimes };
     },
   },
+  {
+    slug: 'london',
+    name: 'London',
+    country: 'United Kingdom',
+    description: 'Underground (Tube)',
+    transitTypes: ['metro'],
+    center: [51.509, -0.118],
+    defaultZoom: 12,
+    maxBounds: [[51.28, -0.65], [51.72, 0.35]],
+    minZoom: 10,
+    load: async () => {
+      const [{ stations, connections }, { lines }, { gtfsSegmentTimes, gtfsTransferTimes }] = await Promise.all([
+        import('./london/stations'),
+        import('./london/lines'),
+        import('./london/gtfs-times'),
+      ]);
+      return { stations, connections, lines, gtfsSegmentTimes, gtfsTransferTimes };
+    },
+  },
 ];
 
 export function getCityBySlug(slug: string): CityDef | undefined {

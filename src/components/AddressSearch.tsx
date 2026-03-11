@@ -11,9 +11,10 @@ interface SearchResult {
 interface Props {
   onSelect: (lat: number, lng: number, address: string) => void;
   cityName: string;
+  country?: string;
 }
 
-export default function AddressSearch({ onSelect, cityName }: Props) {
+export default function AddressSearch({ onSelect, cityName, country }: Props) {
   const { t } = useI18n();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -28,7 +29,7 @@ export default function AddressSearch({ onSelect, cityName }: Props) {
     }
     setLoading(true);
     try {
-      const data = await searchAddress(q, cityName);
+      const data = await searchAddress(q, cityName, 5, country);
       setResults(data);
       setShowResults(true);
     } catch {
@@ -36,7 +37,7 @@ export default function AddressSearch({ onSelect, cityName }: Props) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [cityName, country]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;

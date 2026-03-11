@@ -74,6 +74,13 @@ const fr = {
 
   // Countries
   france: 'France',
+  unitedKingdom: 'Royaume-Uni',
+
+  // City names
+  london: 'Londres',
+
+  // Transit descriptions
+  underground: 'Métro souterrain (Tube)',
 };
 
 type TranslationKeys = typeof fr;
@@ -130,6 +137,9 @@ const en: TranslationKeys = {
   free: 'Free',
   noName: 'Unnamed',
   france: 'France',
+  unitedKingdom: 'United Kingdom',
+  london: 'London',
+  underground: 'Underground (Tube)',
 };
 
 const de: TranslationKeys = {
@@ -184,6 +194,9 @@ const de: TranslationKeys = {
   free: 'Kostenlos',
   noName: 'Unbenannt',
   france: 'Frankreich',
+  unitedKingdom: 'Vereinigtes Königreich',
+  london: 'London',
+  underground: 'U-Bahn (Tube)',
 };
 
 const it: TranslationKeys = {
@@ -238,6 +251,9 @@ const it: TranslationKeys = {
   free: 'Gratuito',
   noName: 'Senza nome',
   france: 'Francia',
+  unitedKingdom: 'Regno Unito',
+  london: 'Londra',
+  underground: 'Metropolitana (Tube)',
 };
 
 const es: TranslationKeys = {
@@ -292,6 +308,9 @@ const es: TranslationKeys = {
   free: 'Gratis',
   noName: 'Sin nombre',
   france: 'Francia',
+  unitedKingdom: 'Reino Unido',
+  london: 'Londres',
+  underground: 'Metro subterráneo (Tube)',
 };
 
 export const translations: Record<Locale, TranslationKeys> = { fr, en, de, it, es };

@@ -34,11 +34,15 @@ interface Props {
   nearbyPlaces: NearbyPlace[];
   onBack: () => void;
   cityName: string;
+  citySlug: string;
+  cityCountry: string;
 }
+
+const cityNameKeys: Record<string, string> = { london: 'london' };
 
 export default function Sidebar({
   points, onAddPoint, onRemovePoint, onCompute, computing,
-  optimalAddress, optimalTime, optimalLat, optimalLng, travelTimes, isOpen, onToggle, showTransit, onToggleTransit, showHeatmap, onToggleHeatmap, onToggleBike, onClearAll, getShareUrl, nearbyPlaces, onBack, cityName,
+  optimalAddress, optimalTime, optimalLat, optimalLng, travelTimes, isOpen, onToggle, showTransit, onToggleTransit, showHeatmap, onToggleHeatmap, onToggleBike, onClearAll, getShareUrl, nearbyPlaces, onBack, cityName, citySlug, cityCountry,
 }: Props) {
   const { t } = useI18n();
   const [shareOpen, setShareOpen] = useState(false);
@@ -135,7 +139,7 @@ export default function Sidebar({
               <LanguageSelector className="text-slate-400" />
             </div>
             <p className="text-slate-400 text-sm mt-1">
-              {t.subtitle} — {cityName}
+              {t.subtitle} — {cityNameKeys[citySlug] ? (t as Record<string, string>)[cityNameKeys[citySlug]] : cityName}
             </p>
           </div>
 
@@ -144,7 +148,7 @@ export default function Sidebar({
             <label className="text-sm font-medium text-slate-300 mb-2 block">
               {t.addDeparture}
             </label>
-            <AddressSearch onSelect={onAddPoint} cityName={cityName} />
+            <AddressSearch onSelect={onAddPoint} cityName={cityName} country={cityCountry} />
             <p className="text-xs text-slate-500 mt-2 hidden md:block">
               {t.clickOnMap}
             </p>

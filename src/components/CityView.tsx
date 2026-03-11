@@ -212,6 +212,8 @@ export default function CityView({ city, graph, onBack }: Props) {
         nearbyPlaces={nearbyPlaces}
         onBack={onBack}
         cityName={city.name}
+        citySlug={city.slug}
+        cityCountry={city.country}
       />
       <div className="flex-1 relative">
         <MapView
