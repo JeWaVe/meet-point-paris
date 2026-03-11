@@ -1,8 +1,125 @@
-// Placeholder — will be generated from GTFS RTM data
-// Run: node scripts/extract-gtfs.mjs marseille && node scripts/build-gtfs-data.mjs marseille
+// Auto-generated from GTFS RTM data - do not edit manually
+// Generated on 2026-03-11
 
-export const gtfsSegmentTimes: Record<string, number> = {};
+/**
+ * Inter-station travel times in minutes (from GTFS stop_times.txt median values).
+ * Key format: "stationA|stationB" -> time in minutes.
+ * Both directions are included.
+ */
+export const gtfsSegmentTimes: Record<string, number> = {
+  "m1_baille|m1_castellane": 1.4,
+  "m1_baille|m1_la_timone": 1.5,
+  "m1_castellane|m1_baille": 1.4,
+  "m1_castellane|m1_estrangin": 1.8,
+  "m1_chartreux|m1_cinq_avenues": 1.4,
+  "m1_chartreux|m1_saint_just": 1.5,
+  "m1_cinq_avenues|m1_chartreux": 1.4,
+  "m1_colbert|m1_vieux_port": 1.3,
+  "m1_estrangin|m1_castellane": 1.8,
+  "m1_estrangin|m1_vieux_port": 1.5,
+  "m1_frais_vallon|m1_la_rose": 1.8,
+  "m1_frais_vallon|m1_malpasse": 1.4,
+  "m1_la_blancarde|m1_la_timone": 1.3,
+  "m1_la_fourragere|m1_saint_barnabe": 1.1,
+  "m1_la_rose|m1_frais_vallon": 1.8,
+  "m1_la_timone|m1_baille": 1.5,
+  "m1_la_timone|m1_la_blancarde": 1.3,
+  "m1_malpasse|m1_frais_vallon": 1.4,
+  "m1_malpasse|m1_saint_just": 1.7,
+  "m1_saint_barnabe|m1_la_fourragere": 1.1,
+  "m1_saint_charles|m2_jules_guesde": 1.4,
+  "m1_saint_just|m1_chartreux": 1.5,
+  "m1_saint_just|m1_malpasse": 1.7,
+  "m1_vieux_port|m1_colbert": 1.3,
+  "m1_vieux_port|m1_estrangin": 1.5,
+  "m2_bougainville|m2_geze": 1.8,
+  "m2_bougainville|m2_national": 1.3,
+  "m2_desiree_clary|m2_joliette": 1.6,
+  "m2_desiree_clary|m2_national": 1.4,
+  "m2_geze|m2_bougainville": 1.8,
+  "m2_joliette|m2_desiree_clary": 1.6,
+  "m2_jules_guesde|m1_saint_charles": 1.4,
+  "m2_national|m2_bougainville": 1.3,
+  "m2_national|m2_desiree_clary": 1.4,
+  "m2_noailles|m2_notre_dame": 1.2,
+  "m2_notre_dame|m2_noailles": 1.2,
+  "m2_perier|m2_rond_point_prado": 1.5,
+  "m2_rond_point_prado|m2_perier": 1.5,
+  "m2_rond_point_prado|m2_ste_marguerite": 1.4,
+  "m2_ste_marguerite|m2_rond_point_prado": 1.4,
+  "t1_air_bel|t1_la_boiseraie": 2,
+  "t1_air_bel|t1_la_grognarde": 0.8,
+  "t1_camas|t1_eugene_pierre": 0.9,
+  "t1_camas|t1_george": 1.1,
+  "t1_eugene_pierre|t1_camas": 0.9,
+  "t1_george|t1_camas": 1.1,
+  "t1_george|t1_jean_martin": 1.2,
+  "t1_jean_martin|t1_george": 1.2,
+  "t1_la_boiseraie|t1_air_bel": 2,
+  "t1_la_boiseraie|t1_la_parette": 0.9,
+  "t1_la_grognarde|t1_air_bel": 0.8,
+  "t1_la_grognarde|t1_william_booth": 1.5,
+  "t1_la_parette|t1_la_boiseraie": 0.9,
+  "t1_la_parette|t1_saint_pierre": 2.1,
+  "t1_les_caillols|t1_william_booth": 1.8,
+  "t1_saint_pierre|t1_la_parette": 2.1,
+  "t1_saint_pierre|t1_sainte_therese": 2,
+  "t1_sainte_therese|t1_saint_pierre": 2,
+  "t1_william_booth|t1_la_grognarde": 1.5,
+  "t1_william_booth|t1_les_caillols": 1.8,
+  "t2_arenc|t2_euromed_silo": 1.8,
+  "t2_arenc|t3_salengro_bachas": 2.6,
+  "t2_belsunce|t2_canebiere_capucins": 2,
+  "t2_belsunce|t2_sadi_carnot": 2,
+  "t2_belsunce|t3_cours_st_louis": 1.8,
+  "t2_boisson|t2_foch_sakakini": 1.4,
+  "t2_canebiere_capucins|t2_belsunce": 2,
+  "t2_cinq_avenues|t2_foch_sakakini": 1.3,
+  "t2_cinq_avenues|t2_palais_longchamp": 1.7,
+  "t2_euromed_silo|t2_arenc": 1.8,
+  "t2_foch_sakakini|t2_boisson": 1.4,
+  "t2_foch_sakakini|t2_cinq_avenues": 1.3,
+  "t2_longchamp|t2_palais_longchamp": 1.4,
+  "t2_longchamp|t2_reformes": 1.2,
+  "t2_palais_longchamp|t2_cinq_avenues": 1.7,
+  "t2_palais_longchamp|t2_longchamp": 1.4,
+  "t2_reformes|t2_longchamp": 1.2,
+  "t2_republique|t2_sadi_carnot": 1.1,
+  "t2_sadi_carnot|t2_belsunce": 2,
+  "t2_sadi_carnot|t2_republique": 1.1,
+  "t3_aubert_ganay|t3_parc_sevigne": 1.8,
+  "t3_cours_st_louis|t2_belsunce": 1.8,
+  "t3_cours_st_louis|t3_rome_davso": 1.5,
+  "t3_hopital_ste_marguerite|t3_la_gaye": 1.4,
+  "t3_hopital_ste_marguerite|t3_parc_sevigne": 1.5,
+  "t3_la_gaye|t3_hopital_ste_marguerite": 1.4,
+  "t3_parc_sevigne|t3_aubert_ganay": 1.8,
+  "t3_parc_sevigne|t3_hopital_ste_marguerite": 1.5,
+  "t3_place_de_rome|t3_rome_davso": 1.5,
+  "t3_place_de_rome|t3_rome_dragon": 1.6,
+  "t3_rome_davso|t3_cours_st_louis": 1.5,
+  "t3_rome_davso|t3_place_de_rome": 1.5,
+  "t3_rome_dragon|t3_place_de_rome": 1.6,
+  "t3_salengro_bachas|t2_arenc": 2.6,
+  "t3_salengro_bachas|t3_salengro_cougit": 2.3,
+  "t3_salengro_cougit|t3_salengro_bachas": 2.3,
+};
 
-export const gtfsHeadways: Record<string, { peak: number | null; offpeak: number | null; evening: number | null }> = {};
+/**
+ * Average headway (minutes between trains) per line per time period.
+ * Wait time ~= headway / 2.
+ */
+export const gtfsHeadways: Record<string, { peak: number | null; offpeak: number | null; evening: number | null }> = {
+  "M1": { peak: 0.8, offpeak: 0.9, evening: 2.1 },
+  "M2": { peak: 0.8, offpeak: 1, evening: 2.3 },
+  "T1": { peak: 2, offpeak: 2.1, evening: 3.3 },
+  "T2": { peak: 1, offpeak: 1, evening: 2.1 },
+  "T3": { peak: 1.1, offpeak: 1.1, evening: 1.7 },
+};
 
-export const gtfsTransferTimes: Record<string, number> = {};
+/**
+ * Transfer times between stations in minutes (from GTFS transfers.txt).
+ * Key format: "stationA|stationB" -> time in minutes.
+ */
+export const gtfsTransferTimes: Record<string, number> = {
+};

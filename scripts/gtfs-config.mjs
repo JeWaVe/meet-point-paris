@@ -58,4 +58,18 @@ export const cities = {
     routeNames: {}, // filled dynamically from routes.txt
     routeToLine: {}, // filled dynamically from routes.txt
   },
+
+  marseille: {
+    name: 'Marseille (RTM)',
+    gtfsUrl: 'https://app.mecatran.com/utw/ws/gtfsfeed/static/mamp-rtm?apiKey=16421b08630a7d065c6d250051780f484b673659',
+    cacheDir: './gtfs-cache/marseille',
+    stationsFile: './src/data/cities/marseille/stations.ts',
+    outputFile: './src/data/cities/marseille/gtfs-times.ts',
+    generatedComment: 'Auto-generated from GTFS RTM data - do not edit manually',
+    // Filter by route_type: 0=tram, 1=metro
+    routeFilter: 'types',
+    routeTypes: new Set(['0', '1']),
+    routeNames: {}, // filled dynamically from routes.txt
+    routeToLine: {}, // filled dynamically from routes.txt
+  },
 };
