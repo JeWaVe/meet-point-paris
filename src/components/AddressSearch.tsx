@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { useI18n } from '../i18n/context';
+import { searchAddress } from '../utils/geocoding';
 
 interface SearchResult {
   display_name: string;
@@ -27,10 +28,7 @@ export default function AddressSearch({ onSelect, cityName }: Props) {
     }
     setLoading(true);
     try {
-      const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q + ', ' + cityName + ', France')}&limit=5&addressdetails=1`
-      );
-      const data = await res.json();
+      const data = await searchAddress(q, cityName);
       setResults(data);
       setShowResults(true);
     } catch {

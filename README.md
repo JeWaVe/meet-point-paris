@@ -74,13 +74,14 @@ node scripts/build-gtfs-data.mjs paris    # or toulouse, marseille
 - Vite (with automatic code splitting per city)
 - Tailwind CSS 4
 - Leaflet + react-leaflet
-- Nominatim (reverse geocoding)
+- LocationIQ (geocoding & reverse geocoding)
 - No backend — everything runs client-side
 
 ## Getting started
 
 ```bash
 npm install
+cp .env.local.example .env.local  # add your API keys
 npm run dev
 ```
 
@@ -101,7 +102,7 @@ src/
     CityView.tsx                 # City map page, state management
     MapView.tsx                  # Leaflet map, canvas heatmap, markers
     Sidebar.tsx                  # Point list, controls, share menu
-    AddressSearch.tsx            # Address autocomplete (Nominatim)
+    AddressSearch.tsx            # Address autocomplete (LocationIQ)
     TransitLayer.tsx             # Transit lines and stations overlay
     LanguageSelector.tsx         # Language picker (FR/EN/DE/IT/ES)
   i18n/
@@ -117,6 +118,7 @@ src/
   utils/
     transitGraph.ts              # TransitGraph class, Dijkstra, spatial index
     heatmap.ts                   # Grid computation, L2 optimization
+    geocoding.ts                 # LocationIQ search & reverse geocoding
 scripts/
   gtfs-config.mjs                # Per-city GTFS configuration
   extract-gtfs.mjs               # Parse raw GTFS data

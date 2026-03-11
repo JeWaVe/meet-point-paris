@@ -4,6 +4,7 @@ import Sidebar from './Sidebar';
 import { computeHeatmap } from '../utils/heatmap';
 import { TransitGraph } from '../utils/transitGraph';
 import { searchNearbyPlaces } from '../utils/places';
+import { reverseGeocode } from '../utils/geocoding';
 import type { NearbyPlace } from '../utils/places';
 import type { SelectedPoint, HeatmapResult } from '../utils/heatmap';
 import type { CityDef } from '../data/cities';
@@ -97,10 +98,7 @@ export default function CityView({ city, graph, onBack }: Props) {
   const handleMapClick = useCallback(async (lat: number, lng: number) => {
     let address = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
     try {
-      const res = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18`
-      );
-      const data = await res.json();
+      const data = await reverseGeocode(lat, lng);
       if (data.display_name) {
         address = data.display_name.split(',').slice(0, 2).join(',');
       }
@@ -166,10 +164,7 @@ export default function CityView({ city, graph, onBack }: Props) {
         setOptimalLng(result.optimal.lng);
 
         try {
-          const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${result.optimal.lat}&lon=${result.optimal.lng}&zoom=18`
-          );
-          const data = await res.json();
+          const data = await reverseGeocode(result.optimal.lat, result.optimal.lng);
           setOptimalAddress(data.display_name?.split(',').slice(0, 3).join(',') || 'Point optimal');
         } catch {
           setOptimalAddress(`${result.optimal.lat.toFixed(4)}, ${result.optimal.lng.toFixed(4)}`);
