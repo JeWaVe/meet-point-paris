@@ -4,6 +4,7 @@ import CityView from './components/CityView';
 import { TransitGraph } from './utils/transitGraph';
 import { getCityBySlug } from './data/cities';
 import type { CityDef } from './data/cities';
+import { useI18n } from './i18n/context';
 
 const DEFAULT_CITY = 'paris';
 
@@ -35,6 +36,7 @@ function parseRoute(): { slug: string | null } {
 }
 
 function App() {
+  const { t } = useI18n();
   const [citySlug, setCitySlug] = useState<string | null>(() => parseRoute().slug);
   const [city, setCity] = useState<CityDef | null>(() =>
     citySlug ? getCityBySlug(citySlug) ?? null : null
@@ -93,7 +95,7 @@ function App() {
       <div className="h-full flex items-center justify-center bg-gray-900 text-white">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-          <p>Chargement des données de transport...</p>
+          <p>{t.loadingTransit}</p>
         </div>
       </div>
     );

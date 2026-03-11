@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
+import { useI18n } from '../i18n/context';
 
 interface SearchResult {
   display_name: string;
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export default function AddressSearch({ onSelect, cityName }: Props) {
+  const { t } = useI18n();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -61,7 +63,7 @@ export default function AddressSearch({ onSelect, cityName }: Props) {
           onChange={handleChange}
           onFocus={() => results.length > 0 && setShowResults(true)}
           onBlur={() => setTimeout(() => setShowResults(false), 200)}
-          placeholder="Rechercher une adresse..."
+          placeholder={t.searchPlaceholder}
           className="w-full px-4 py-2.5 bg-slate-700 text-white rounded-lg border border-slate-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none placeholder-slate-400 text-sm"
         />
         {loading && (

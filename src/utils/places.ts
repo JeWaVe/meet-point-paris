@@ -14,7 +14,7 @@ export interface NearbyPlace {
 const API_KEY = import.meta.env.VITE_GOOGLE_PLACES_KEY as string;
 
 const PRICE_LABELS: Record<string, string> = {
-  PRICE_LEVEL_FREE: 'Gratuit',
+  PRICE_LEVEL_FREE: '🆓',
   PRICE_LEVEL_INEXPENSIVE: '€',
   PRICE_LEVEL_MODERATE: '€€',
   PRICE_LEVEL_EXPENSIVE: '€€€',
@@ -46,7 +46,7 @@ export async function searchNearbyPlaces(
       includedTypes: ['restaurant', 'cafe', 'bar'],
       maxResultCount: maxResults,
       rankPreference: 'POPULARITY',
-      languageCode: 'fr',
+      languageCode: localStorage.getItem('locale') || 'fr',
     }),
   });
 
@@ -57,7 +57,7 @@ export async function searchNearbyPlaces(
 
   return data.places.map((p: any) => ({
     id: p.id,
-    name: p.displayName?.text || 'Sans nom',
+    name: p.displayName?.text || '?',
     lat: p.location?.latitude,
     lng: p.location?.longitude,
     rating: p.rating,

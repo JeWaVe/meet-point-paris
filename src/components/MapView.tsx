@@ -7,6 +7,7 @@ import type { NearbyPlace } from '../utils/places';
 import type { Station } from '../data/types';
 import type { LineDefinition } from '../data/types';
 import TransitLayer from './TransitLayer';
+import { useI18n } from '../i18n/context';
 
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
@@ -35,10 +36,10 @@ const optimalIcon = new L.DivIcon({
   iconAnchor: [18, 18],
 });
 
-function getPlaceCategory(types: string[]): { emoji: string; label: string } {
-  if (types.includes('bar')) return { emoji: '🍸', label: 'Bar' };
-  if (types.includes('cafe')) return { emoji: '☕', label: 'Café' };
-  return { emoji: '🍽️', label: 'Restaurant' };
+function getPlaceCategory(types: string[], t: { bar: string; cafe: string; restaurant: string }): { emoji: string; label: string } {
+  if (types.includes('bar')) return { emoji: '🍸', label: t.bar };
+  if (types.includes('cafe')) return { emoji: '☕', label: t.cafe };
+  return { emoji: '🍽️', label: t.restaurant };
 }
 
 const placeIcons: Record<string, L.DivIcon> = {};
@@ -216,6 +217,7 @@ interface Props {
 }
 
 export default function MapView({ points, heatmapResult, optimalAddress, onMapClick, showTransit, showHeatmap, nearbyPlaces, stations, lines, center, defaultZoom, maxBounds, minZoom }: Props) {
+  const { t } = useI18n();
   return (
     <MapContainer
       center={center}
@@ -242,7 +244,7 @@ export default function MapView({ points, heatmapResult, optimalAddress, onMapCl
         <Marker key={p.id} position={[p.lat, p.lng]} icon={getUserIcon(i)}>
           <Popup>
             <div className="text-sm">
-              <strong>Point {i + 1}</strong><br />
+              <strong>{t.point} {i + 1}</strong><br />
               {p.address}
             </div>
           </Popup>
@@ -250,7 +252,7 @@ export default function MapView({ points, heatmapResult, optimalAddress, onMapCl
       ))}
 
       {nearbyPlaces.map(place => {
-        const cat = getPlaceCategory(place.types);
+        const cat = getPlaceCategory(place.types, t);
         return (
         <Marker key={place.id} position={[place.lat, place.lng]} icon={getPlaceIcon(cat.emoji)}>
           <Popup>
@@ -262,7 +264,7 @@ export default function MapView({ points, heatmapResult, optimalAddress, onMapCl
               {place.priceLevel && <span> · {place.priceLevel}</span>}
               {place.address && <><br />{place.address}</>}
               {place.googleMapsUri && (
-                <><br /><a href={place.googleMapsUri} target="_blank" rel="noopener noreferrer" style={{color: '#6366f1'}}>Voir sur Google Maps</a></>
+                <><br /><a href={place.googleMapsUri} target="_blank" rel="noopener noreferrer" style={{color: '#6366f1'}}>{t.viewOnGoogleMaps}</a></>
               )}
             </div>
           </Popup>
@@ -278,9 +280,9 @@ export default function MapView({ points, heatmapResult, optimalAddress, onMapCl
         >
           <Popup>
             <div className="text-sm">
-              <strong>Point de rencontre optimal</strong><br />
-              {optimalAddress || 'Calcul...'}<br />
-              Temps moyen : {Math.round(heatmapResult.optimal.time)} min
+              <strong>{t.optimalPoint}</strong><br />
+              {optimalAddress || t.computing}<br />
+              {t.avgTime} : {Math.round(heatmapResult.optimal.time)} min
             </div>
           </Popup>
         </Marker>

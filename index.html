@@ -1,31 +1,40 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📍</text></svg>" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WhereToMeet — Trouvez le lieu de rendez-vous idéal en transports en commun</title>
-    <meta name="description" content="Calculez le point de rencontre optimal en transports en commun dans votre ville. Ajoutez vos adresses de départ et trouvez le lieu le plus équitable pour se retrouver. Métro, RER, tramway, téléphérique et vélo." />
+    <title>WhereToMeet — Find the ideal meeting point using public transit</title>
+    <meta name="description" content="Find the optimal meeting point using public transit in Paris, Toulouse, and Marseille. Add departure addresses and find the fairest place to meet. Metro, RER, tram, cable car, and bike. Available in French, English, German, Italian, and Spanish." />
     <link rel="canonical" href="https://wheretomeet.app/" />
-    <meta name="keywords" content="lieu de rendez-vous, point de rencontre, Paris, Toulouse, Marseille, transports en commun, métro, RER, tramway, téléphérique, vélo, meeting point, optimal" />
+    <meta name="keywords" content="meeting point, point de rencontre, Treffpunkt, punto de encuentro, punto di incontro, Paris, Toulouse, Marseille, public transit, transports en commun, metro, RER, tram, bike, optimal" />
     <meta name="robots" content="index, follow" />
+    <link rel="alternate" hreflang="en" href="https://wheretomeet.app/" />
     <link rel="alternate" hreflang="fr" href="https://wheretomeet.app/" />
+    <link rel="alternate" hreflang="de" href="https://wheretomeet.app/" />
+    <link rel="alternate" hreflang="it" href="https://wheretomeet.app/" />
+    <link rel="alternate" hreflang="es" href="https://wheretomeet.app/" />
+    <link rel="alternate" hreflang="x-default" href="https://wheretomeet.app/" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="WhereToMeet" />
-    <meta property="og:title" content="WhereToMeet — Trouvez le lieu de rendez-vous idéal en transports en commun" />
-    <meta property="og:description" content="Calculez le point de rencontre optimal en transports en commun dans votre ville. Métro, RER, tramway et vélo. Restaurants et bars à proximité." />
+    <meta property="og:title" content="WhereToMeet — Find the ideal meeting point using public transit" />
+    <meta property="og:description" content="Find the optimal meeting point using public transit in Paris, Toulouse, and Marseille. Restaurants and bars nearby." />
     <meta property="og:image" content="https://wheretomeet.app/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:url" content="https://wheretomeet.app/" />
-    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="fr_FR" />
+    <meta property="og:locale:alternate" content="de_DE" />
+    <meta property="og:locale:alternate" content="it_IT" />
+    <meta property="og:locale:alternate" content="es_ES" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="WhereToMeet — Lieu de rendez-vous optimal en transports en commun" />
-    <meta name="twitter:description" content="Point de rencontre optimal en transports en commun dans votre ville. Métro, RER, tramway, téléphérique et vélo." />
+    <meta name="twitter:title" content="WhereToMeet — Find the ideal meeting point using public transit" />
+    <meta name="twitter:description" content="Optimal meeting point using public transit in Paris, Toulouse, and Marseille. Metro, tram, bike." />
     <meta name="twitter:image" content="https://wheretomeet.app/og-image.png" />
 
     <!-- Structured Data -->
@@ -35,7 +44,7 @@
       "@type": "WebApplication",
       "name": "WhereToMeet",
       "url": "https://wheretomeet.app/",
-      "description": "Calculez le point de rencontre optimal en transports en commun dans votre ville. Métro, RER, tramway, téléphérique et vélo.",
+      "description": "Find the optimal meeting point using public transit in Paris, Toulouse, and Marseille. Metro, RER, tram, cable car, and bike.",
       "applicationCategory": "TravelApplication",
       "operatingSystem": "Web",
       "offers": {
@@ -44,7 +53,7 @@
         "priceCurrency": "EUR"
       },
       "browserRequirements": "Requires JavaScript",
-      "availableLanguage": "fr",
+      "availableLanguage": ["fr", "en", "de", "it", "es"],
       "areaServed": [
         {
           "@type": "City",
@@ -72,22 +81,22 @@
     <div id="root"></div>
     <noscript>
       <div style="max-width: 600px; margin: 40px auto; padding: 20px; font-family: system-ui, sans-serif;">
-        <h1>WhereToMeet — Trouvez le lieu de rendez-vous idéal en transports en commun</h1>
-        <p>WhereToMeet calcule le point de rencontre optimal en transports en commun dans votre ville.</p>
-        <h2>Comment ça marche ?</h2>
+        <h1>WhereToMeet — Find the ideal meeting point using public transit</h1>
+        <p>WhereToMeet finds the optimal meeting point using public transit in your city. Available in French, English, German, Italian, and Spanish.</p>
+        <h2>How it works</h2>
         <ol>
-          <li>Choisissez votre ville : Paris, Toulouse ou Marseille</li>
-          <li>Ajoutez 2 adresses de départ ou plus (recherche ou clic sur la carte)</li>
-          <li>Activez le mode vélo pour chaque participant si besoin</li>
-          <li>Cliquez sur « Calculer le point de rencontre »</li>
-          <li>Découvrez le lieu optimal avec les restaurants, cafés et bars à proximité</li>
+          <li>Choose your city: Paris, Toulouse, or Marseille</li>
+          <li>Add 2 or more departure addresses (search or click on the map)</li>
+          <li>Toggle bike mode for each participant if needed</li>
+          <li>Click "Find meeting point"</li>
+          <li>Discover the optimal location with nearby restaurants, cafés, and bars</li>
         </ol>
-        <h2>Réseaux couverts</h2>
-        <p><strong>Paris :</strong> Métro (lignes 1–14, 3bis, 7bis), RER (A–E), Tramway (T1–T13) — 750+ stations.</p>
-        <p><strong>Toulouse :</strong> Métro (A, B), Tramway (T1), Téléphérique (Téléo) — 66 stations.</p>
-        <p><strong>Marseille :</strong> Métro (M1, M2), Tramway (T1, T2, T3) — 68 stations.</p>
-        <p>Temps de trajet réels issus des données GTFS officielles.</p>
-        <p><strong>JavaScript est requis pour utiliser cette application.</strong></p>
+        <h2>Covered networks</h2>
+        <p><strong>Paris:</strong> Metro (lines 1–14, 3bis, 7bis), RER (A–E), Tram (T1–T13) — 750+ stations.</p>
+        <p><strong>Toulouse:</strong> Metro (A, B), Tram (T1), Cable car (Téléo) — 66 stations.</p>
+        <p><strong>Marseille:</strong> Metro (M1, M2), Tram (T1, T2, T3) — 68 stations.</p>
+        <p>Real travel times from official GTFS data.</p>
+        <p><strong>JavaScript is required to use this application.</strong></p>
       </div>
     </noscript>
     <script type="module" src="/src/main.tsx"></script>

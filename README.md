@@ -28,7 +28,8 @@ Each city has its own lazy-loaded data bundle (stations, lines, GTFS times), so 
 - **Heatmap visualization** — Canvas overlay showing travel time with a non-linear color scale (green = best, red/purple = worst)
 - **L2 optimal point** — Meeting point minimizes the L2 norm (root sum of squared travel times) for fairness across participants
 - **Share** — Share your meeting setup via WhatsApp, Messenger, or a copyable link (points encoded in URL)
-- **Mobile-friendly** — Responsive bottom sheet UI on mobile, full sidebar on desktop
+- **Multilingual** — French, English, German, Italian, Spanish — auto-detected from browser language, switchable in-app
+- **Mobile-friendly** — Responsive bottom sheet UI with fixed compute button, full sidebar on desktop
 - **Dark theme** — CARTO dark basemap with transit lines overlay
 
 ## How it works
@@ -36,7 +37,7 @@ Each city has its own lazy-loaded data bundle (stations, lines, GTFS times), so 
 1. Pick a city from the landing page
 2. Add 2+ departure points (address search or map click)
 3. Optionally toggle the bike icon per participant
-4. Click "Calculer le point de rencontre"
+4. Click "Find meeting point"
 5. The app runs a two-pass computation:
    - Coarse 30x30 grid to approximate the optimal zone
    - Fine 80x80 grid centered on the optimal + all departure points
@@ -55,8 +56,8 @@ The `scripts/` directory contains Node scripts to extract data from GTFS feeds:
 To regenerate GTFS data for a city:
 
 ```bash
-node scripts/extract-gtfs.mjs paris      # or toulouse
-node scripts/build-gtfs-data.mjs paris    # or toulouse
+node scripts/extract-gtfs.mjs paris      # or toulouse, marseille
+node scripts/build-gtfs-data.mjs paris    # or toulouse, marseille
 ```
 
 ## Adding a new city
@@ -102,12 +103,17 @@ src/
     Sidebar.tsx                  # Point list, controls, share menu
     AddressSearch.tsx            # Address autocomplete (Nominatim)
     TransitLayer.tsx             # Transit lines and stations overlay
+    LanguageSelector.tsx         # Language picker (FR/EN/DE/IT/ES)
+  i18n/
+    translations.ts              # All UI strings in 5 languages
+    context.tsx                  # React context + useI18n hook
   data/
     types.ts                     # Shared interfaces (Station, Connection, LineDefinition)
     cities/
       index.ts                   # City registry with lazy loaders
       paris/                     # Paris data (stations, lines, gtfs-times)
       toulouse/                  # Toulouse data (stations, lines, gtfs-times)
+      marseille/                 # Marseille data (stations, lines, gtfs-times)
   utils/
     transitGraph.ts              # TransitGraph class, Dijkstra, spatial index
     heatmap.ts                   # Grid computation, L2 optimization

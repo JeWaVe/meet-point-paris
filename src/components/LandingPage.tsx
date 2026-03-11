@@ -1,11 +1,14 @@
 import { cities } from '../data/cities';
 import type { CityDef } from '../data/cities';
+import { useI18n } from '../i18n/context';
+import LanguageSelector from './LanguageSelector';
 
 interface Props {
   onSelectCity: (city: CityDef) => void;
 }
 
 export default function LandingPage({ onSelectCity }: Props) {
+  const { t } = useI18n();
   return (
     <div className="min-h-full bg-gray-950 text-white flex flex-col">
       {/* Header */}
@@ -14,15 +17,18 @@ export default function LandingPage({ onSelectCity }: Props) {
           Where<span className="text-indigo-400">To</span>Meet
         </h1>
         <p className="text-gray-400 text-lg max-w-md mx-auto">
-          Trouvez le lieu de rendez-vous idéal en transports en commun
+          {t.tagline}
         </p>
+        <div className="mt-3">
+          <LanguageSelector className="text-gray-400" />
+        </div>
       </header>
 
       {/* City grid */}
       <main className="flex-1 flex items-start justify-center px-4 pb-12">
         <div className="w-full max-w-2xl">
           <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4 px-1">
-            Choisissez une ville
+            {t.chooseCity}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {cities.map(city => (
@@ -36,7 +42,7 @@ export default function LandingPage({ onSelectCity }: Props) {
                     <h3 className="text-xl font-semibold group-hover:text-indigo-400 transition-colors">
                       {city.name}
                     </h3>
-                    <p className="text-gray-500 text-sm mt-0.5">{city.country}</p>
+                    <p className="text-gray-500 text-sm mt-0.5">{t.france}</p>
                   </div>
                   <span className="text-2xl opacity-80 group-hover:scale-110 transition-transform">
                     {city.transitTypes.includes('metro') ? '🚇' : '🚊'}
@@ -44,7 +50,7 @@ export default function LandingPage({ onSelectCity }: Props) {
                 </div>
                 <p className="text-gray-400 text-sm mt-3">{city.description}</p>
                 <div className="mt-4 flex items-center text-indigo-400 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                  Ouvrir la carte
+                  {t.openMap}
                   <svg className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
@@ -57,13 +63,13 @@ export default function LandingPage({ onSelectCity }: Props) {
               <div className="flex items-start justify-between">
                 <div>
                   <h3 className="text-xl font-semibold text-gray-600">
-                    Bientôt...
+                    {t.comingSoon}
                   </h3>
-                  <p className="text-gray-700 text-sm mt-0.5">D'autres villes arrivent</p>
+                  <p className="text-gray-700 text-sm mt-0.5">{t.moreCities}</p>
                 </div>
                 <span className="text-2xl opacity-30">🏙️</span>
               </div>
-              <p className="text-gray-700 text-sm mt-3">Lyon, Marseille, Lille...</p>
+              <p className="text-gray-700 text-sm mt-3">{t.comingCities}</p>
             </div>
           </div>
         </div>
