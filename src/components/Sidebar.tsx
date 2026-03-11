@@ -180,7 +180,7 @@ export default function Sidebar({
           </div>
 
           {/* Points list + results (scrollable) */}
-          <div className="flex-1 overflow-y-auto min-h-0 p-3 md:p-4 pb-16 md:pb-4 space-y-3">
+          <div data-scroll-container className="flex-1 overflow-y-auto min-h-0 p-3 md:p-4 pb-16 md:pb-4 space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-medium text-slate-300">
                 {t.departurePoints} ({points.length})
@@ -265,7 +265,7 @@ export default function Sidebar({
 
             {/* Optimal result */}
             {optimalAddress && optimalTime !== null && (
-              <div className="bg-emerald-900/30 border border-emerald-700/50 rounded-lg p-3 md:p-4">
+              <div id="optimal-result" className="bg-emerald-900/30 border border-emerald-700/50 rounded-lg p-3 md:p-4">
                 <div className="flex items-center gap-2 mb-1 md:mb-2">
                   <span className="text-emerald-400 text-lg">⭐</span>
                   <h3 className="text-sm font-medium text-emerald-300">
