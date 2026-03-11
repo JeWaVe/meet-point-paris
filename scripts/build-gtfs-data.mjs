@@ -11,7 +11,7 @@ import { readFileSync, writeFileSync } from 'fs';
 const gtfs = JSON.parse(readFileSync('./gtfs-cache/gtfs-extracted.json', 'utf8'));
 
 // Dynamically import our stations data - we'll parse it from the TS source
-const stationsSource = readFileSync('./src/data/stations.ts', 'utf8');
+const stationsSource = readFileSync('./src/data/cities/paris/stations.ts', 'utf8');
 
 // Extract station objects from source using regex
 const stationRegex = /\{\s*id:\s*"([^"]+)",\s*name:\s*"([^"]+)",\s*lat:\s*([\d.]+),\s*lng:\s*([\d.]+)/g;
@@ -177,8 +177,8 @@ for (const [key, time] of Object.entries(transferData).sort((a, b) => a[0].local
 }
 ts += `};\n`;
 
-writeFileSync('./src/data/gtfs-times.ts', ts);
-console.log(`\nWrote src/data/gtfs-times.ts (${(ts.length / 1024).toFixed(0)} KB)`);
+writeFileSync('./src/data/cities/paris/gtfs-times.ts', ts);
+console.log(`\nWrote src/data/cities/paris/gtfs-times.ts (${(ts.length / 1024).toFixed(0)} KB)`);
 
 // Print some diagnostics
 console.log('\n=== UNMATCHED STATIONS ===');

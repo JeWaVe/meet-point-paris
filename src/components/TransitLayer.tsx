@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from 'react';
 import { Polyline, CircleMarker, Tooltip, useMap } from 'react-leaflet';
-import type { Station } from '../data/stations';
-import type { LineDefinition } from '../data/lines';
+import type { Station } from '../data/types';
+import type { LineDefinition } from '../data/types';
 
 function resolveCoords(ids: string[], stationMap: Map<string, Station>): [number, number][] {
   return ids

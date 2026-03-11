@@ -1,16 +1,6 @@
-export interface Station {
-  id: string;
-  name: string;
-  lat: number;
-  lng: number;
-  lines: string[];
-}
+import type { Station, Connection } from '../../types';
 
-export interface Connection {
-  from: string;
-  to: string;
-  time: number; // minutes
-}
+export type { Station, Connection };
 
 export const stations: Station[] = [
   // === METRO LINE 1 ===

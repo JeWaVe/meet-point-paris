@@ -3,23 +3,13 @@ import MapView from './components/MapView';
 import Sidebar from './components/Sidebar';
 import { computeHeatmap } from './utils/heatmap';
 import { TransitGraph } from './utils/transitGraph';
-import type { CityTransitData } from './utils/transitGraph';
 import { searchNearbyPlaces } from './utils/places';
 import type { NearbyPlace } from './utils/places';
 import type { SelectedPoint, HeatmapResult } from './utils/heatmap';
+import { getCityBySlug } from './data/cities';
+import type { CityDef } from './data/cities';
 
-// Import Paris data directly (default city)
-import { stations, connections } from './data/stations';
-import { lines } from './data/lines';
-import { gtfsSegmentTimes, gtfsTransferTimes } from './data/gtfs-times';
-
-const parisCityData: CityTransitData = {
-  stations,
-  connections,
-  lines,
-  gtfsSegmentTimes,
-  gtfsTransferTimes,
-};
+const DEFAULT_CITY = 'paris';
 
 function encodePoints(pts: SelectedPoint[]): string {
   return pts.map(p => `${p.lat.toFixed(5)},${p.lng.toFixed(5)},${p.hasBike ? '1' : '0'},${encodeURIComponent(p.address)}`).join('|');
@@ -45,8 +35,22 @@ function decodePoints(hash: string): SelectedPoint[] {
 }
 
 function App() {
-  // Build transit graph (memoized — will rebuild when city data changes)
-  const graph = useMemo(() => new TransitGraph(parisCityData), []);
+  const city = useMemo<CityDef>(() => getCityBySlug(DEFAULT_CITY)!, []);
+
+  const [graph, setGraph] = useState<TransitGraph | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  // Load city data on mount
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    city.load().then(data => {
+      if (cancelled) return;
+      setGraph(new TransitGraph(data));
+      setLoading(false);
+    });
+    return () => { cancelled = true; };
+  }, [city]);
 
   const [points, setPoints] = useState<SelectedPoint[]>(() => {
     const hash = window.location.hash.slice(1);
@@ -150,7 +154,7 @@ function App() {
   }, []);
 
   const handleCompute = useCallback(async () => {
-    if (points.length < 2) return;
+    if (points.length < 2 || !graph) return;
 
     setComputing(true);
 
@@ -194,11 +198,22 @@ function App() {
   const [hasUrlPoints] = useState(() => window.location.hash.startsWith('#p='));
   const [autoComputed, setAutoComputed] = useState(false);
   useEffect(() => {
-    if (hasUrlPoints && !autoComputed && points.length >= 2) {
+    if (hasUrlPoints && !autoComputed && points.length >= 2 && graph) {
       setAutoComputed(true);
       handleCompute();
     }
-  }, [hasUrlPoints, autoComputed, points, handleCompute]);
+  }, [hasUrlPoints, autoComputed, points, handleCompute, graph]);
+
+  if (loading || !graph) {
+    return (
+      <div className="h-full flex items-center justify-center bg-gray-900 text-white">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+          <p>Chargement des données de transport...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-full flex">
@@ -232,10 +247,10 @@ function App() {
           nearbyPlaces={nearbyPlaces}
           stations={graph.stations}
           lines={graph.lines}
-          center={[48.8566, 2.3522]}
-          defaultZoom={12}
-          maxBounds={[[48.65, 1.9], [49.05, 2.8]]}
-          minZoom={10}
+          center={city.center}
+          defaultZoom={city.defaultZoom}
+          maxBounds={city.maxBounds}
+          minZoom={city.minZoom}
         />
       </div>
     </div>

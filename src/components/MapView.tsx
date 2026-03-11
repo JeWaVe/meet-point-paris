@@ -3,8 +3,8 @@ import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from 're
 import L, { LatLngBoundsExpression } from 'leaflet';
 import type { SelectedPoint, HeatmapResult } from '../utils/heatmap';
 import type { NearbyPlace } from '../utils/places';
-import type { Station } from '../data/stations';
-import type { LineDefinition } from '../data/lines';
+import type { Station } from '../data/types';
+import type { LineDefinition } from '../data/types';
 import TransitLayer from './TransitLayer';
 
 import iconUrl from 'leaflet/dist/images/marker-icon.png';

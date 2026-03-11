@@ -1,12 +1,6 @@
-// Official Paris metro/RER line colors and station sequences for map rendering
-export interface LineDefinition {
-  id: string;
-  name: string;
-  color: string;
-  type: 'metro' | 'rer' | 'tram';
-  // Each branch is an ordered array of station IDs
-  branches: string[][];
-}
+import type { LineDefinition } from '../../types';
+
+export type { LineDefinition };
 
 export const lines: LineDefinition[] = [
   {

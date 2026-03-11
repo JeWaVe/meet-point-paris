@@ -1,5 +1,5 @@
-import type { Station, Connection } from '../data/stations';
-import type { LineDefinition } from '../data/lines';
+import type { Station, Connection } from '../data/types';
+import type { LineDefinition } from '../data/types';
 
 // === Types ===
 
