@@ -1,8 +1,10 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from 'react-leaflet';
-import L from 'leaflet';
+import L, { LatLngBoundsExpression } from 'leaflet';
 import type { SelectedPoint, HeatmapResult } from '../utils/heatmap';
 import type { NearbyPlace } from '../utils/places';
+import type { Station } from '../data/stations';
+import type { LineDefinition } from '../data/lines';
 import TransitLayer from './TransitLayer';
 
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
@@ -198,15 +200,24 @@ interface Props {
   onMapClick: (lat: number, lng: number) => void;
   showTransit: boolean;
   nearbyPlaces: NearbyPlace[];
+  stations: Station[];
+  lines: LineDefinition[];
+  center: [number, number];
+  defaultZoom: number;
+  maxBounds: LatLngBoundsExpression;
+  minZoom: number;
 }
 
-export default function MapView({ points, heatmapResult, optimalAddress, onMapClick, showTransit, nearbyPlaces }: Props) {
+export default function MapView({ points, heatmapResult, optimalAddress, onMapClick, showTransit, nearbyPlaces, stations, lines, center, defaultZoom, maxBounds, minZoom }: Props) {
   return (
     <MapContainer
-      center={[48.8566, 2.3522]}
-      zoom={12}
+      center={center}
+      zoom={defaultZoom}
       className="h-full w-full"
       zoomControl={false}
+      maxBounds={maxBounds}
+      maxBoundsViscosity={0.9}
+      minZoom={minZoom}
     >
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
@@ -216,7 +227,7 @@ export default function MapView({ points, heatmapResult, optimalAddress, onMapCl
       <MapClickHandler onClick={onMapClick} />
 
       {/* Transit lines and stations layer (below heatmap when heatmap is active) */}
-      <TransitLayer showLines={showTransit} showStations={showTransit} />
+      <TransitLayer showLines={showTransit} showStations={showTransit} stations={stations} lines={lines} />
 
       <CanvasHeatmapLayer heatmapResult={heatmapResult} />
 

@@ -1,11 +1,25 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import MapView from './components/MapView';
 import Sidebar from './components/Sidebar';
 import { computeHeatmap } from './utils/heatmap';
-import { travelTime } from './utils/transitGraph';
+import { TransitGraph } from './utils/transitGraph';
+import type { CityTransitData } from './utils/transitGraph';
 import { searchNearbyPlaces } from './utils/places';
 import type { NearbyPlace } from './utils/places';
 import type { SelectedPoint, HeatmapResult } from './utils/heatmap';
+
+// Import Paris data directly (default city)
+import { stations, connections } from './data/stations';
+import { lines } from './data/lines';
+import { gtfsSegmentTimes, gtfsTransferTimes } from './data/gtfs-times';
+
+const parisCityData: CityTransitData = {
+  stations,
+  connections,
+  lines,
+  gtfsSegmentTimes,
+  gtfsTransferTimes,
+};
 
 function encodePoints(pts: SelectedPoint[]): string {
   return pts.map(p => `${p.lat.toFixed(5)},${p.lng.toFixed(5)},${p.hasBike ? '1' : '0'},${encodeURIComponent(p.address)}`).join('|');
@@ -31,6 +45,9 @@ function decodePoints(hash: string): SelectedPoint[] {
 }
 
 function App() {
+  // Build transit graph (memoized — will rebuild when city data changes)
+  const graph = useMemo(() => new TransitGraph(parisCityData), []);
+
   const [points, setPoints] = useState<SelectedPoint[]>(() => {
     const hash = window.location.hash.slice(1);
     if (hash.startsWith('p=')) {
@@ -139,14 +156,14 @@ function App() {
 
     setTimeout(async () => {
       try {
-        const result = computeHeatmap(points);
+        const result = computeHeatmap(points, graph);
         setHeatmapResult(result);
 
         // Compute individual travel times to optimal
         const times = new Map<string, number>();
         let totalTime = 0;
         for (const p of points) {
-          const t = travelTime(p.lat, p.lng, result.optimal.lat, result.optimal.lng, p.hasBike);
+          const t = graph.travelTime(p.lat, p.lng, result.optimal.lat, result.optimal.lng, p.hasBike);
           times.set(p.id, t);
           totalTime += t;
         }
@@ -171,10 +188,9 @@ function App() {
         setComputing(false);
       }
     }, 50);
-  }, [points]);
+  }, [points, graph]);
 
   // Auto-compute on load if points came from URL
-  // Auto-compute only if points were loaded from URL on startup
   const [hasUrlPoints] = useState(() => window.location.hash.startsWith('#p='));
   const [autoComputed, setAutoComputed] = useState(false);
   useEffect(() => {
@@ -214,6 +230,12 @@ function App() {
           onMapClick={handleMapClick}
           showTransit={showTransit}
           nearbyPlaces={nearbyPlaces}
+          stations={graph.stations}
+          lines={graph.lines}
+          center={[48.8566, 2.3522]}
+          defaultZoom={12}
+          maxBounds={[[48.65, 1.9], [49.05, 2.8]]}
+          minZoom={10}
         />
       </div>
     </div>

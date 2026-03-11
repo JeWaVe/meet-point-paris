@@ -1,15 +1,9 @@
 import { useMemo, useState, useEffect } from 'react';
 import { Polyline, CircleMarker, Tooltip, useMap } from 'react-leaflet';
-import { lines } from '../data/lines';
-import { stations } from '../data/stations';
 import type { Station } from '../data/stations';
+import type { LineDefinition } from '../data/lines';
 
-const stationMap = new Map<string, Station>();
-for (const s of stations) {
-  stationMap.set(s.id, s);
-}
-
-function resolveCoords(ids: string[]): [number, number][] {
+function resolveCoords(ids: string[], stationMap: Map<string, Station>): [number, number][] {
   return ids
     .map(id => {
       const s = stationMap.get(id);
@@ -18,7 +12,7 @@ function resolveCoords(ids: string[]): [number, number][] {
     .filter((c): c is [number, number] => c !== null);
 }
 
-function getUniqueStations(): (Station & { isHub: boolean })[] {
+function getUniqueStations(stations: Station[]): (Station & { isHub: boolean })[] {
   const seen = new Set<string>();
   const result: (Station & { isHub: boolean })[] = [];
   for (const s of stations) {
@@ -32,9 +26,11 @@ function getUniqueStations(): (Station & { isHub: boolean })[] {
 interface Props {
   showStations: boolean;
   showLines: boolean;
+  stations: Station[];
+  lines: LineDefinition[];
 }
 
-export default function TransitLayer({ showStations, showLines }: Props) {
+export default function TransitLayer({ showStations, showLines, stations, lines }: Props) {
   const map = useMap();
   const [zoom, setZoom] = useState(map.getZoom());
 
@@ -44,13 +40,19 @@ export default function TransitLayer({ showStations, showLines }: Props) {
     return () => { map.off('zoomend', onZoom); };
   }, [map]);
 
-  const uniqueStations = useMemo(() => getUniqueStations(), []);
+  const stationMap = useMemo(() => {
+    const m = new Map<string, Station>();
+    for (const s of stations) m.set(s.id, s);
+    return m;
+  }, [stations]);
+
+  const uniqueStations = useMemo(() => getUniqueStations(stations), [stations]);
 
   const lineElements = useMemo(() => {
     if (!showLines) return null;
     return lines.flatMap(line =>
       line.branches.map((branch, bi) => {
-        const coords = resolveCoords(branch);
+        const coords = resolveCoords(branch, stationMap);
         if (coords.length < 2) return null;
         return (
           <Polyline
@@ -68,7 +70,7 @@ export default function TransitLayer({ showStations, showLines }: Props) {
         );
       }).filter(Boolean)
     );
-  }, [showLines]);
+  }, [showLines, lines, stationMap]);
 
   const showMarkers = showStations && zoom >= 12;
   const showLabels = zoom >= 14;
