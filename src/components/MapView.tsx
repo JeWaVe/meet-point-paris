@@ -1,6 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from 'react-leaflet';
-import L, { LatLngBoundsExpression } from 'leaflet';
+import L from 'leaflet';
+import type { LatLngBoundsExpression } from 'leaflet';
 import type { SelectedPoint, HeatmapResult } from '../utils/heatmap';
 import type { NearbyPlace } from '../utils/places';
 import type { Station } from '../data/types';
