@@ -4,18 +4,18 @@
     <meta charset="UTF-8" />
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📍</text></svg>" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WhereToMeet — Trouvez le lieu de rendez-vous idéal à Paris</title>
-    <meta name="description" content="Calculez le point de rencontre optimal en transports en commun à Paris. Ajoutez vos adresses de départ et trouvez le lieu le plus équitable pour se retrouver. Métro, RER, tramway et vélo." />
+    <title>WhereToMeet — Trouvez le lieu de rendez-vous idéal en transports en commun</title>
+    <meta name="description" content="Calculez le point de rencontre optimal en transports en commun dans votre ville. Ajoutez vos adresses de départ et trouvez le lieu le plus équitable pour se retrouver. Métro, RER, tramway, téléphérique et vélo." />
     <link rel="canonical" href="https://wheretomeet.app/" />
-    <meta name="keywords" content="lieu de rendez-vous, point de rencontre, Paris, transports en commun, métro, RER, tramway, vélo, meeting point, optimal" />
+    <meta name="keywords" content="lieu de rendez-vous, point de rencontre, Paris, Toulouse, Marseille, transports en commun, métro, RER, tramway, téléphérique, vélo, meeting point, optimal" />
     <meta name="robots" content="index, follow" />
     <link rel="alternate" hreflang="fr" href="https://wheretomeet.app/" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="WhereToMeet" />
-    <meta property="og:title" content="WhereToMeet — Trouvez le lieu de rendez-vous idéal à Paris" />
-    <meta property="og:description" content="Calculez le point de rencontre optimal en transports en commun. Métro, RER, tramway et vélo. Restaurants et bars à proximité." />
+    <meta property="og:title" content="WhereToMeet — Trouvez le lieu de rendez-vous idéal en transports en commun" />
+    <meta property="og:description" content="Calculez le point de rencontre optimal en transports en commun dans votre ville. Métro, RER, tramway et vélo. Restaurants et bars à proximité." />
     <meta property="og:image" content="https://wheretomeet.app/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -24,8 +24,8 @@
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="WhereToMeet — Lieu de rendez-vous optimal à Paris" />
-    <meta name="twitter:description" content="Calculez le point de rencontre optimal en transports en commun. Métro, RER, tramway et vélo." />
+    <meta name="twitter:title" content="WhereToMeet — Lieu de rendez-vous optimal en transports en commun" />
+    <meta name="twitter:description" content="Point de rencontre optimal en transports en commun dans votre ville. Métro, RER, tramway, téléphérique et vélo." />
     <meta name="twitter:image" content="https://wheretomeet.app/og-image.png" />
 
     <!-- Structured Data -->
@@ -35,7 +35,7 @@
       "@type": "WebApplication",
       "name": "WhereToMeet",
       "url": "https://wheretomeet.app/",
-      "description": "Calculez le point de rencontre optimal en transports en commun à Paris. Métro, RER, tramway et vélo.",
+      "description": "Calculez le point de rencontre optimal en transports en commun dans votre ville. Métro, RER, tramway, téléphérique et vélo.",
       "applicationCategory": "TravelApplication",
       "operatingSystem": "Web",
       "offers": {
@@ -45,11 +45,23 @@
       },
       "browserRequirements": "Requires JavaScript",
       "availableLanguage": "fr",
-      "areaServed": {
-        "@type": "City",
-        "name": "Paris",
-        "sameAs": "https://www.wikidata.org/wiki/Q90"
-      }
+      "areaServed": [
+        {
+          "@type": "City",
+          "name": "Paris",
+          "sameAs": "https://www.wikidata.org/wiki/Q90"
+        },
+        {
+          "@type": "City",
+          "name": "Toulouse",
+          "sameAs": "https://www.wikidata.org/wiki/Q7880"
+        },
+        {
+          "@type": "City",
+          "name": "Marseille",
+          "sameAs": "https://www.wikidata.org/wiki/Q2619"
+        }
+      ]
     }
     </script>
 
@@ -60,18 +72,21 @@
     <div id="root"></div>
     <noscript>
       <div style="max-width: 600px; margin: 40px auto; padding: 20px; font-family: system-ui, sans-serif;">
-        <h1>WhereToMeet — Trouvez le lieu de rendez-vous idéal à Paris</h1>
-        <p>WhereToMeet calcule le point de rencontre optimal en transports en commun à Paris.</p>
+        <h1>WhereToMeet — Trouvez le lieu de rendez-vous idéal en transports en commun</h1>
+        <p>WhereToMeet calcule le point de rencontre optimal en transports en commun dans votre ville.</p>
         <h2>Comment ça marche ?</h2>
         <ol>
+          <li>Choisissez votre ville : Paris, Toulouse ou Marseille</li>
           <li>Ajoutez 2 adresses de départ ou plus (recherche ou clic sur la carte)</li>
           <li>Activez le mode vélo pour chaque participant si besoin</li>
           <li>Cliquez sur « Calculer le point de rencontre »</li>
           <li>Découvrez le lieu optimal avec les restaurants, cafés et bars à proximité</li>
         </ol>
-        <h2>Réseau couvert</h2>
-        <p>Métro (lignes 1–14, 3bis, 7bis), RER (A–E), Tramway (T1–T13), vélo et marche à pied.</p>
-        <p>Plus de 750 stations avec des temps de trajet réels issus des données GTFS d'Île-de-France Mobilités.</p>
+        <h2>Réseaux couverts</h2>
+        <p><strong>Paris :</strong> Métro (lignes 1–14, 3bis, 7bis), RER (A–E), Tramway (T1–T13) — 750+ stations.</p>
+        <p><strong>Toulouse :</strong> Métro (A, B), Tramway (T1), Téléphérique (Téléo) — 66 stations.</p>
+        <p><strong>Marseille :</strong> Métro (M1, M2), Tramway (T1, T2, T3) — 68 stations.</p>
+        <p>Temps de trajet réels issus des données GTFS officielles.</p>
         <p><strong>JavaScript est requis pour utiliser cette application.</strong></p>
       </div>
     </noscript>
