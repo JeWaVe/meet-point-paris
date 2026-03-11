@@ -129,4 +129,4 @@ scripts/
 
 ## License
 
-MIT
+[Business Source License 1.1](LICENSE) — Free for personal and non-commercial use. Converts to MIT on 2030-03-11. For commercial use, contact the author.
