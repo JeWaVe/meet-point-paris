@@ -34,6 +34,25 @@ export const cities: CityDef[] = [
       return { stations, connections, lines, gtfsSegmentTimes, gtfsTransferTimes };
     },
   },
+  {
+    slug: 'toulouse',
+    name: 'Toulouse',
+    country: 'France',
+    description: 'Métro, Tramway',
+    transitTypes: ['metro', 'tram'],
+    center: [43.6047, 1.4442],
+    defaultZoom: 13,
+    maxBounds: [[43.53, 1.33], [43.68, 1.52]],
+    minZoom: 12,
+    load: async () => {
+      const [{ stations, connections }, { lines }, { gtfsSegmentTimes, gtfsTransferTimes }] = await Promise.all([
+        import('./toulouse/stations'),
+        import('./toulouse/lines'),
+        import('./toulouse/gtfs-times'),
+      ]);
+      return { stations, connections, lines, gtfsSegmentTimes, gtfsTransferTimes };
+    },
+  },
 ];
 
 export function getCityBySlug(slug: string): CityDef | undefined {

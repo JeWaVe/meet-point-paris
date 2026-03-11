@@ -63,7 +63,7 @@ export default function LandingPage({ onSelectCity }: Props) {
                 </div>
                 <span className="text-2xl opacity-30">🏙️</span>
               </div>
-              <p className="text-gray-700 text-sm mt-3">Lyon, Marseille, Toulouse...</p>
+              <p className="text-gray-700 text-sm mt-3">Lyon, Marseille, Lille...</p>
             </div>
           </div>
         </div>

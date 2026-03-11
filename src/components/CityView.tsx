@@ -56,10 +56,10 @@ export default function CityView({ city, graph, onBack }: Props) {
   const [showTransit, setShowTransit] = useState(true);
   const [nearbyPlaces, setNearbyPlaces] = useState<NearbyPlace[]>([]);
 
-  // Update URL hash when points change
+  // Update URL hash when points change (use replaceState to avoid popstate triggers)
   useEffect(() => {
     if (points.length > 0) {
-      window.location.hash = `p=${encodePoints(points)}`;
+      history.replaceState(null, '', `/${city.slug}#p=${encodePoints(points)}`);
     } else {
       const path = `/${city.slug}`;
       if (window.location.pathname !== path || window.location.hash) {
