@@ -107,7 +107,7 @@ export default function Sidebar({
             <label className="text-sm font-medium text-slate-300 mb-2 block">
               Ajouter un point de départ
             </label>
-            <AddressSearch onSelect={onAddPoint} />
+            <AddressSearch onSelect={onAddPoint} cityName={cityName} />
             <p className="text-xs text-slate-500 mt-2 hidden md:block">
               Ou cliquez directement sur la carte
             </p>

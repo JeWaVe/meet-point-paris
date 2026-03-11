@@ -8,9 +8,10 @@ interface SearchResult {
 
 interface Props {
   onSelect: (lat: number, lng: number, address: string) => void;
+  cityName: string;
 }
 
-export default function AddressSearch({ onSelect }: Props) {
+export default function AddressSearch({ onSelect, cityName }: Props) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -25,7 +26,7 @@ export default function AddressSearch({ onSelect }: Props) {
     setLoading(true);
     try {
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q + ', Paris, France')}&limit=5&addressdetails=1`
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q + ', ' + cityName + ', France')}&limit=5&addressdetails=1`
       );
       const data = await res.json();
       setResults(data);
