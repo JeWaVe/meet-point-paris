@@ -24,6 +24,7 @@ const fr = {
 
   // Search
   addDeparture: 'Ajouter un point de départ',
+  openPanel: 'Options & adresses',
   searchPlaceholder: 'Rechercher une adresse...',
   clickOnMap: 'Ou cliquez directement sur la carte',
 
@@ -108,6 +109,7 @@ const en: TranslationKeys = {
   changeCity: 'Change city',
 
   addDeparture: 'Add a departure point',
+  openPanel: 'Options & addresses',
   searchPlaceholder: 'Search for an address...',
   clickOnMap: 'Or click directly on the map',
 
@@ -174,6 +176,7 @@ const de: TranslationKeys = {
   changeCity: 'Stadt wechseln',
 
   addDeparture: 'Startpunkt hinzufügen',
+  openPanel: 'Optionen & Adressen',
   searchPlaceholder: 'Adresse suchen...',
   clickOnMap: 'Oder direkt auf die Karte klicken',
 
@@ -240,6 +243,7 @@ const it: TranslationKeys = {
   changeCity: 'Cambia città',
 
   addDeparture: 'Aggiungi un punto di partenza',
+  openPanel: 'Opzioni & indirizzi',
   searchPlaceholder: 'Cerca un indirizzo...',
   clickOnMap: 'Oppure clicca direttamente sulla mappa',
 
@@ -306,6 +310,7 @@ const es: TranslationKeys = {
   changeCity: 'Cambiar de ciudad',
 
   addDeparture: 'Añadir un punto de partida',
+  openPanel: 'Opciones y direcciones',
   searchPlaceholder: 'Buscar una dirección...',
   clickOnMap: 'O haz clic directamente en el mapa',
 
