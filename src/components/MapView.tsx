@@ -14,14 +14,19 @@ import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
 
 L.Icon.Default.mergeOptions({ iconUrl, iconRetinaUrl, shadowUrl });
 
-const userIcon = new L.DivIcon({
-  html: `<div style="background: #6366f1; width: 28px; height: 28px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center;">
-    <div style="width: 8px; height: 8px; background: white; border-radius: 50%;"></div>
-  </div>`,
-  className: '',
-  iconSize: [28, 28],
-  iconAnchor: [14, 14],
-});
+const userIcons: L.DivIcon[] = [];
+function getUserIcon(index: number): L.DivIcon {
+  if (!userIcons[index]) {
+    const label = index + 1;
+    userIcons[index] = new L.DivIcon({
+      html: `<div style="background: #6366f1; width: 28px; height: 28px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: 700; font-family: system-ui, sans-serif;">${label}</div>`,
+      className: '',
+      iconSize: [28, 28],
+      iconAnchor: [14, 14],
+    });
+  }
+  return userIcons[index];
+}
 
 const optimalIcon = new L.DivIcon({
   html: `<div style="background: #10b981; width: 36px; height: 36px; border-radius: 50%; border: 3px solid white; box-shadow: 0 2px 12px rgba(16,185,129,0.5); display: flex; align-items: center; justify-content: center; font-size: 18px;">⭐</div>`,
@@ -233,7 +238,7 @@ export default function MapView({ points, heatmapResult, optimalAddress, onMapCl
       <CanvasHeatmapLayer heatmapResult={heatmapResult} />
 
       {points.map((p, i) => (
-        <Marker key={p.id} position={[p.lat, p.lng]} icon={userIcon}>
+        <Marker key={p.id} position={[p.lat, p.lng]} icon={getUserIcon(i)}>
           <Popup>
             <div className="text-sm">
               <strong>Point {i + 1}</strong><br />
