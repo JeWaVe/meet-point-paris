@@ -99,12 +99,11 @@ export default function Sidebar({
         {/* Drag handle + language - mobile only */}
         <div className="md:hidden flex items-center justify-between px-4 pt-3 pb-1">
           <button
-            onClick={onBack}
+            onClick={onToggle}
             className="text-slate-400 active:text-white transition-colors p-1 rounded"
-            title={t.changeCity}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </button>
           <div className="w-10 h-1.5 bg-slate-600 rounded-full" />
@@ -370,7 +369,9 @@ export default function Sidebar({
             )}
 
             {/* Footer links */}
-            <div className="text-center text-xs text-slate-500 pt-2 flex items-center justify-center gap-3">
+            <div className="text-center text-xs text-slate-500 pt-2 flex items-center justify-center gap-3 flex-wrap">
+              <button onClick={onBack} className="hover:text-slate-300 transition-colors cursor-pointer">{t.changeCity}</button>
+              <span>·</span>
               <a href="https://github.com/JeWaVe/meet-point-paris" target="_blank" rel="noopener noreferrer" className="hover:text-slate-300 transition-colors">GitHub</a>
               <span>·</span>
               <a href="/legal" onClick={(e) => { e.preventDefault(); onLegal(); }} className="hover:text-slate-300 transition-colors cursor-pointer">{t.legalNotice}</a>
