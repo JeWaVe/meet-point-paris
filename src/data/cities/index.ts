@@ -91,6 +91,25 @@ export const cities: CityDef[] = [
       return { stations, connections, lines, gtfsSegmentTimes, gtfsTransferTimes };
     },
   },
+  {
+    slug: 'new-york',
+    name: 'New York',
+    country: 'United States',
+    description: 'Subway',
+    transitTypes: ['metro'],
+    center: [40.7128, -74.006],
+    defaultZoom: 12,
+    maxBounds: [[40.47, -74.28], [40.93, -73.68]],
+    minZoom: 10,
+    load: async () => {
+      const [{ stations, connections }, { lines }, { gtfsSegmentTimes, gtfsTransferTimes }] = await Promise.all([
+        import('./new-york/stations'),
+        import('./new-york/lines'),
+        import('./new-york/gtfs-times'),
+      ]);
+      return { stations, connections, lines, gtfsSegmentTimes, gtfsTransferTimes };
+    },
+  },
 ];
 
 export function getCityBySlug(slug: string): CityDef | undefined {

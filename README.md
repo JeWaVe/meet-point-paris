@@ -14,12 +14,13 @@ Enter multiple departure addresses, and the app computes the best place to meet 
 | **Toulouse** | Metro (A, B), Tramway (T1), Téléphérique (Téléo) — 66 stations | Tisséo GTFS |
 | **Marseille** | Metro (M1, M2), Tramway (T1, T2, T3) — 68 stations | RTM GTFS |
 | **London** | Underground (Tube) — 11 lines, 266 stations | TfL open data |
+| **New York** | Subway — 23 lines, 424 stations | MTA GTFS |
 
 Each city has its own lazy-loaded data bundle (stations, lines, GTFS times), so only the selected city's data is downloaded.
 
 ## Features
 
-- **Multi-city support** — Landing page with city picker, path-based routing (`/paris`, `/toulouse`, `/london`)
+- **Multi-city support** — Landing page with city picker, path-based routing (`/paris`, `/toulouse`, `/london`, `/new-york`)
 - **Interactive map** — Click on the map or search addresses to add departure points
 - **Real GTFS travel times** — Inter-station times and transfer durations extracted from official GTFS datasets, with realistic dwell time, boarding penalty, and transfer wait times
 - **Line-aware routing** — Expanded graph where each node is a (station, line) pair, so line switches at shared stations incur a realistic transfer cost. Precomputed all-pairs shortest paths with spatial index for fast nearest-station lookup
@@ -117,6 +118,7 @@ src/
       toulouse/                  # Toulouse data (stations, lines, gtfs-times)
       marseille/                 # Marseille data (stations, lines, gtfs-times)
       london/                    # London data (stations, lines, gtfs-times)
+      new-york/                  # New York data (stations, lines, gtfs-times)
   utils/
     transitGraph.ts              # TransitGraph class, Dijkstra, spatial index
     heatmap.ts                   # Grid computation, L2 optimization

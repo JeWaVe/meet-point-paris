@@ -112,9 +112,47 @@ function offsetBranch(
     if (count === 0) return coord;
     const avgOffset = totalOffset / count;
 
-    // Get direction from adjacent point
-    const refIdx = i < coords.length - 1 ? i + 1 : i - 1;
-    return offsetPoint(coord[0], coord[1], coords[refIdx][0], coords[refIdx][1], avgOffset);
+    // Get direction from adjacent point, using canonical order (smaller id first)
+    // so that the perpendicular is always on the same side regardless of branch direction
+    let refIdx: number;
+    if (i < ids.length - 1) {
+      refIdx = i + 1;
+    } else {
+      refIdx = i - 1;
+    }
+    const [lat1, lng1] = coord;
+    const [lat2, lng2] = coords[refIdx];
+    // Canonical direction: always from smaller station id to larger
+    const id1 = ids[Math.min(i, refIdx)];
+    const id2 = ids[Math.max(i, refIdx)];
+    const canonical = id1 < id2;
+    const dirLat = canonical ? lat2 - lat1 : lat1 - lat2;
+    const dirLng = canonical ? lng2 - lng1 : lng1 - lng2;
+    return offsetPoint(lat1, lng1, lat1 + dirLat, lng1 + dirLng, avgOffset);
+  });
+}
+
+/** Remove branches that are near-duplicates (reverse/subset) of a longer branch in the same line */
+function deduplicateBranches(lines: LineDefinition[]): LineDefinition[] {
+  return lines.map(line => {
+    if (line.branches.length <= 1) return line;
+    // Sort branches by length descending — keep longer ones first
+    const sorted = [...line.branches].sort((a, b) => b.length - a.length);
+    const kept: string[][] = [];
+    for (const branch of sorted) {
+      const stationSet = new Set(branch);
+      // Check if this branch's stations are mostly contained in an already-kept branch
+      const isDuplicate = kept.some(existing => {
+        const existingSet = new Set(existing);
+        let overlap = 0;
+        for (const id of stationSet) {
+          if (existingSet.has(id)) overlap++;
+        }
+        return overlap >= stationSet.size * 0.8;
+      });
+      if (!isDuplicate) kept.push(branch);
+    }
+    return { ...line, branches: kept };
   });
 }
 
@@ -154,12 +192,13 @@ export default function TransitLayer({ showStations, showLines, stations, lines 
 
   const uniqueStations = useMemo(() => getUniqueStations(stations), [stations]);
 
-  const segmentOffsets = useMemo(() => buildSegmentOffsets(lines), [lines]);
+  const dedupedLines = useMemo(() => deduplicateBranches(lines), [lines]);
+  const segmentOffsets = useMemo(() => buildSegmentOffsets(dedupedLines), [dedupedLines]);
 
   const lineElements = useMemo(() => {
     if (!showLines) return null;
     const spacing = 40; // meters between parallel lines
-    return lines.flatMap(line =>
+    return dedupedLines.flatMap(line =>
       line.branches.map((branch, bi) => {
         const resolved = resolveBranch(branch, stationMap);
         if (resolved.coords.length < 2) return null;
@@ -180,7 +219,7 @@ export default function TransitLayer({ showStations, showLines, stations, lines 
         );
       }).filter(Boolean)
     );
-  }, [showLines, lines, stationMap, segmentOffsets]);
+  }, [showLines, dedupedLines, stationMap, segmentOffsets]);
 
   const showMarkers = showStations && zoom >= 12;
   const showLabels = zoom >= 14;

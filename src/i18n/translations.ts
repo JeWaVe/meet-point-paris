@@ -76,12 +76,15 @@ const fr = {
   // Countries
   france: 'France',
   unitedKingdom: 'Royaume-Uni',
+  unitedStates: 'États-Unis',
 
   // City names
   london: 'Londres',
+  newYork: 'New York',
 
   // Transit descriptions
   underground: 'Métro souterrain (Tube)',
+  nycSubway: 'Métro (Subway)',
 
   // Legal
   legalNotice: 'Mentions légales',
@@ -151,8 +154,11 @@ const en: TranslationKeys = {
   noName: 'Unnamed',
   france: 'France',
   unitedKingdom: 'United Kingdom',
+  unitedStates: 'United States',
   london: 'London',
+  newYork: 'New York',
   underground: 'Underground (Tube)',
+  nycSubway: 'Subway',
   legalNotice: 'Legal notice',
   legalPublisher: 'Publisher',
   legalDirector: 'Publication director',
@@ -218,8 +224,11 @@ const de: TranslationKeys = {
   noName: 'Unbenannt',
   france: 'Frankreich',
   unitedKingdom: 'Vereinigtes Königreich',
+  unitedStates: 'Vereinigte Staaten',
   london: 'London',
+  newYork: 'New York',
   underground: 'U-Bahn (Tube)',
+  nycSubway: 'U-Bahn (Subway)',
   legalNotice: 'Impressum',
   legalPublisher: 'Herausgeber',
   legalDirector: 'Verantwortlicher',
@@ -285,8 +294,11 @@ const it: TranslationKeys = {
   noName: 'Senza nome',
   france: 'Francia',
   unitedKingdom: 'Regno Unito',
+  unitedStates: 'Stati Uniti',
   london: 'Londra',
+  newYork: 'New York',
   underground: 'Metropolitana (Tube)',
+  nycSubway: 'Metropolitana (Subway)',
   legalNotice: 'Note legali',
   legalPublisher: 'Editore',
   legalDirector: 'Direttore della pubblicazione',
@@ -352,8 +364,11 @@ const es: TranslationKeys = {
   noName: 'Sin nombre',
   france: 'Francia',
   unitedKingdom: 'Reino Unido',
+  unitedStates: 'Estados Unidos',
   london: 'Londres',
+  newYork: 'Nueva York',
   underground: 'Metro subterráneo (Tube)',
+  nycSubway: 'Metro (Subway)',
   legalNotice: 'Aviso legal',
   legalPublisher: 'Editor',
   legalDirector: 'Director de publicación',

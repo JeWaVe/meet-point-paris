@@ -11,14 +11,17 @@ interface Props {
 const countryKeys: Record<string, keyof typeof import('../i18n/translations').translations.fr> = {
   'France': 'france',
   'United Kingdom': 'unitedKingdom',
+  'United States': 'unitedStates',
 };
 
 const cityNameKeys: Record<string, keyof typeof import('../i18n/translations').translations.fr> = {
   'london': 'london',
+  'new-york': 'newYork',
 };
 
 const descriptionKeys: Record<string, keyof typeof import('../i18n/translations').translations.fr> = {
   'london': 'underground',
+  'new-york': 'nycSubway',
 };
 
 export default function LandingPage({ onSelectCity, onLegal }: Props) {
