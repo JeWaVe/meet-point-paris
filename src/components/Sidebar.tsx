@@ -48,39 +48,60 @@ export default function Sidebar({
         />
       )}
 
-      {/* Mobile FAB toggle */}
-      <button
-        onClick={onToggle}
-        className="md:hidden fixed bottom-6 right-4 z-50 bg-indigo-600 text-white p-3.5 rounded-full shadow-xl active:bg-indigo-700 transition-colors"
-      >
-        {isOpen ? (
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        ) : (
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        )}
-      </button>
+      {/* Mobile fixed bottom bar: compute button + toggle */}
+      <div className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-slate-900/95 backdrop-blur border-t border-slate-700 px-4 py-3 flex items-center gap-3">
+        <button
+          onClick={onCompute}
+          disabled={points.length < 2 || computing}
+          className="flex-1 py-2.5 px-4 bg-indigo-600 active:bg-indigo-700 disabled:bg-slate-700 disabled:text-slate-500 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2 text-sm"
+        >
+          {computing ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              Calcul...
+            </>
+          ) : (
+            <>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+              </svg>
+              Calculer
+            </>
+          )}
+        </button>
+        <button
+          onClick={onToggle}
+          className="bg-slate-700 text-white p-2.5 rounded-full active:bg-slate-600 transition-colors"
+        >
+          {isOpen ? (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          ) : (
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          )}
+        </button>
+      </div>
 
       {/* Panel: bottom sheet on mobile, sidebar on desktop */}
       <div className={`
-        fixed inset-x-0 bottom-0 z-40
-        md:relative md:inset-auto
+        fixed inset-x-0 bottom-[60px] z-40
+        md:relative md:inset-auto md:bottom-auto
         bg-slate-800 border-t border-slate-700 md:border-t-0 md:border-r
         rounded-t-2xl md:rounded-none
-        max-h-[80vh] md:max-h-none md:h-full
+        max-h-[75vh] md:max-h-none md:h-full
         w-full md:w-96 flex-shrink-0
         transition-transform duration-300 ease-in-out
-        ${isOpen ? 'translate-y-0' : 'translate-y-full'} md:translate-y-0
+        ${isOpen ? 'translate-y-0' : 'translate-y-[calc(100%+60px)]'} md:translate-y-0
       `}>
         {/* Drag handle - mobile only */}
         <div className="md:hidden flex justify-center pt-3 pb-1">
           <div className="w-10 h-1.5 bg-slate-600 rounded-full" />
         </div>
 
-        <div className="md:h-full flex flex-col overflow-hidden">
+        <div className="max-h-[inherit] md:h-full flex flex-col">
           {/* Header - desktop only */}
           <div className="hidden md:block p-5 border-b border-slate-700">
             <div className="flex items-center gap-2">
@@ -132,9 +153,9 @@ export default function Sidebar({
             </label>
           </div>
 
-          {/* Points list */}
-          <div className="flex-1 overflow-y-auto min-h-0 p-3 md:p-4">
-            <div className="flex items-center justify-between mb-3">
+          {/* Points list + results (scrollable) */}
+          <div className="flex-1 overflow-y-auto min-h-0 p-3 md:p-4 pb-16 md:pb-4 space-y-3">
+            <div className="flex items-center justify-between">
               <h2 className="text-sm font-medium text-slate-300">
                 Points de départ ({points.length})
               </h2>
@@ -215,29 +236,6 @@ export default function Sidebar({
                 ))}
               </div>
             )}
-          </div>
-
-          {/* Actions */}
-          <div className="p-3 md:p-4 border-t border-slate-700 space-y-2 md:space-y-3">
-            <button
-              onClick={onCompute}
-              disabled={points.length < 2 || computing}
-              className="w-full py-2.5 md:py-3 px-4 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-700 disabled:bg-slate-700 disabled:text-slate-500 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
-            >
-              {computing ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Calcul en cours...
-                </>
-              ) : (
-                <>
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                  </svg>
-                  Calculer le point de rencontre
-                </>
-              )}
-            </button>
 
             {/* Optimal result */}
             {optimalAddress && optimalTime !== null && (
@@ -261,7 +259,7 @@ export default function Sidebar({
                 <h3 className="text-sm font-medium text-amber-300 mb-2 flex items-center gap-2">
                   🍽️ À proximité
                 </h3>
-                <div className="space-y-1.5 max-h-40 overflow-y-auto">
+                <div className="space-y-1.5">
                   {nearbyPlaces.map(place => (
                     <a
                       key={place.id}
@@ -299,7 +297,7 @@ export default function Sidebar({
                   Partager
                 </button>
                 {shareOpen && (
-                  <div className="absolute bottom-full mb-2 md:relative md:bottom-auto md:mb-0 md:mt-2 left-0 right-0 bg-slate-700 rounded-lg border border-slate-600 overflow-hidden">
+                  <div className="mt-2 bg-slate-700 rounded-lg border border-slate-600 overflow-hidden">
                     <button
                       onClick={() => {
                         const url = getShareUrl();
@@ -344,6 +342,29 @@ export default function Sidebar({
                 )}
               </div>
             )}
+          </div>
+
+          {/* Compute button - desktop only (mobile has fixed bottom bar) */}
+          <div className="hidden md:block p-4 border-t border-slate-700">
+            <button
+              onClick={onCompute}
+              disabled={points.length < 2 || computing}
+              className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-700 disabled:text-slate-500 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+            >
+              {computing ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Calcul en cours...
+                </>
+              ) : (
+                <>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                  </svg>
+                  Calculer le point de rencontre
+                </>
+              )}
+            </button>
           </div>
         </div>
       </div>
