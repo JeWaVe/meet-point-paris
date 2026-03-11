@@ -116,7 +116,7 @@ function App() {
     );
   }
 
-  return <CityView key={city.slug} city={city} graph={graph} onBack={navigateHome} />;
+  return <CityView key={city.slug} city={city} graph={graph} onBack={navigateHome} onLegal={navigateToLegal} />;
 }
 
 export default App;

@@ -25,7 +25,7 @@ export default function LandingPage({ onSelectCity, onLegal }: Props) {
   const { t } = useI18n();
   const tt = t as Record<string, string>;
   return (
-    <div className="min-h-full bg-gray-950 text-white flex flex-col">
+    <div className="h-full bg-gray-950 text-white flex flex-col overflow-y-auto">
       {/* Header */}
       <header className="pt-12 pb-6 px-4 text-center">
         <h1 className="text-4xl sm:text-5xl font-bold tracking-tight mb-3">

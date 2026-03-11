@@ -33,6 +33,7 @@ interface Props {
   getShareUrl: () => string;
   nearbyPlaces: NearbyPlace[];
   onBack: () => void;
+  onLegal: () => void;
   cityName: string;
   citySlug: string;
   cityCountry: string;
@@ -42,7 +43,7 @@ const cityNameKeys: Record<string, string> = { london: 'london' };
 
 export default function Sidebar({
   points, onAddPoint, onRemovePoint, onCompute, computing,
-  optimalAddress, optimalTime, optimalLat, optimalLng, travelTimes, isOpen, onToggle, showTransit, onToggleTransit, showHeatmap, onToggleHeatmap, onToggleBike, onClearAll, getShareUrl, nearbyPlaces, onBack, cityName, citySlug, cityCountry,
+  optimalAddress, optimalTime, optimalLat, optimalLng, travelTimes, isOpen, onToggle, showTransit, onToggleTransit, showHeatmap, onToggleHeatmap, onToggleBike, onClearAll, getShareUrl, nearbyPlaces, onBack, onLegal, cityName, citySlug, cityCountry,
 }: Props) {
   const { t } = useI18n();
   const [shareOpen, setShareOpen] = useState(false);
@@ -377,6 +378,13 @@ export default function Sidebar({
                 )}
               </div>
             )}
+
+            {/* Footer links */}
+            <div className="text-center text-xs text-slate-500 pt-2 flex items-center justify-center gap-3">
+              <a href="https://github.com/JeWaVe/meet-point-paris" target="_blank" rel="noopener noreferrer" className="hover:text-slate-300 transition-colors">GitHub</a>
+              <span>·</span>
+              <a href="/legal" onClick={(e) => { e.preventDefault(); onLegal(); }} className="hover:text-slate-300 transition-colors cursor-pointer">{t.legalNotice}</a>
+            </div>
           </div>
 
           {/* Compute button - desktop only (mobile has fixed bottom bar) */}

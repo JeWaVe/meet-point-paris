@@ -36,9 +36,10 @@ interface Props {
   city: CityDef;
   graph: TransitGraph;
   onBack: () => void;
+  onLegal: () => void;
 }
 
-export default function CityView({ city, graph, onBack }: Props) {
+export default function CityView({ city, graph, onBack, onLegal }: Props) {
   const [points, setPoints] = useState<SelectedPoint[]>(() => {
     const hash = window.location.hash.slice(1);
     if (hash.startsWith('p=')) {
@@ -211,6 +212,7 @@ export default function CityView({ city, graph, onBack }: Props) {
         getShareUrl={getShareUrl}
         nearbyPlaces={nearbyPlaces}
         onBack={onBack}
+        onLegal={onLegal}
         cityName={city.name}
         citySlug={city.slug}
         cityCountry={city.country}
