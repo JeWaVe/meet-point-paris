@@ -177,7 +177,7 @@ export default function CityView({ city, graph, onBack, onLegal }: Props) {
         setSidebarOpen(true);
         setTimeout(() => {
           const el = document.getElementById('optimal-result');
-          const container = el?.closest('[data-scroll-container]');
+          const container = el?.closest('[data-scroll-container]') as HTMLElement | null;
           if (el && container) {
             container.scrollTo({ top: el.offsetTop - container.offsetTop, behavior: 'smooth' });
           }
