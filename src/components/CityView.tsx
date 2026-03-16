@@ -1,13 +1,25 @@
 import { useState, useCallback, useEffect } from 'react';
 import MapView from './MapView';
 import Sidebar from './Sidebar';
-import { computeHeatmap } from '../utils/heatmap';
+import { computeHeatmap, extractTopCandidates } from '../utils/heatmap';
+import type { CandidatePoint } from '../utils/heatmap';
 import { TransitGraph } from '../utils/transitGraph';
 import { searchNearbyPlaces } from '../utils/places';
 import { reverseGeocode } from '../utils/geocoding';
 import type { NearbyPlace } from '../utils/places';
 import type { SelectedPoint, HeatmapResult } from '../utils/heatmap';
 import type { CityDef } from '../data/cities';
+import type { AmenityGrid } from '../utils/amenities';
+
+export interface CandidateResult {
+  lat: number;
+  lng: number;
+  address: string;
+  avgTime: number;
+  amenityScore: number;
+  rank: number;
+  travelTimes: Map<string, number>;
+}
 
 function encodePoints(pts: SelectedPoint[]): string {
   return pts.map(p => `${p.lat.toFixed(5)},${p.lng.toFixed(5)},${p.hasBike ? '1' : '0'},${encodeURIComponent(p.address)}`).join('|');
@@ -49,15 +61,18 @@ export default function CityView({ city, graph, onBack, onLegal }: Props) {
   });
   const [heatmapResult, setHeatmapResult] = useState<HeatmapResult | null>(null);
   const [computing, setComputing] = useState(false);
-  const [optimalAddress, setOptimalAddress] = useState<string | null>(null);
-  const [optimalTime, setOptimalTime] = useState<number | null>(null);
-  const [optimalLat, setOptimalLat] = useState<number | null>(null);
-  const [optimalLng, setOptimalLng] = useState<number | null>(null);
-  const [travelTimes, setTravelTimes] = useState<Map<string, number>>(new Map());
+  const [candidates, setCandidates] = useState<CandidateResult[]>([]);
+  const [activeCandidate, setActiveCandidate] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showTransit, setShowTransit] = useState(true);
   const [showHeatmap, setShowHeatmap] = useState(false);
   const [nearbyPlaces, setNearbyPlaces] = useState<NearbyPlace[]>([]);
+  const [amenityGrid, setAmenityGrid] = useState<AmenityGrid | null>(null);
+
+  // Load amenity data (non-blocking)
+  useEffect(() => {
+    city.loadAmenities().then(m => setAmenityGrid(m.amenityGrid)).catch(() => {});
+  }, [city]);
 
   // Update URL hash when points change (use replaceState to avoid popstate triggers)
   useEffect(() => {
@@ -77,6 +92,13 @@ export default function CityView({ city, graph, onBack, onLegal }: Props) {
     return `${base}#p=${encodePoints(points)}`;
   }, [points, city.slug]);
 
+  const clearResults = useCallback(() => {
+    setHeatmapResult(null);
+    setCandidates([]);
+    setActiveCandidate(0);
+    setNearbyPlaces([]);
+  }, []);
+
   const addPoint = useCallback((lat: number, lng: number, address: string) => {
     const newPoint: SelectedPoint = {
       id: `${Date.now()}_${Math.random().toString(36).slice(2)}`,
@@ -86,15 +108,9 @@ export default function CityView({ city, graph, onBack, onLegal }: Props) {
       hasBike: false,
     };
     setPoints(prev => [...prev, newPoint]);
-    setHeatmapResult(null);
-    setOptimalAddress(null);
-    setOptimalTime(null);
-    setOptimalLat(null);
-    setOptimalLng(null);
-    setTravelTimes(new Map());
-    setNearbyPlaces([]);
+    clearResults();
     setSidebarOpen(false);
-  }, []);
+  }, [clearResults]);
 
   const handleMapClick = useCallback(async (lat: number, lng: number) => {
     let address = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
@@ -111,36 +127,25 @@ export default function CityView({ city, graph, onBack, onLegal }: Props) {
 
   const removePoint = useCallback((id: string) => {
     setPoints(prev => prev.filter(p => p.id !== id));
-    setHeatmapResult(null);
-    setOptimalAddress(null);
-    setOptimalTime(null);
-    setOptimalLat(null);
-    setOptimalLng(null);
-    setTravelTimes(new Map());
-    setNearbyPlaces([]);
-  }, []);
+    clearResults();
+  }, [clearResults]);
 
   const toggleBike = useCallback((id: string) => {
     setPoints(prev => prev.map(p => p.id === id ? { ...p, hasBike: !p.hasBike } : p));
-    setHeatmapResult(null);
-    setOptimalAddress(null);
-    setOptimalTime(null);
-    setOptimalLat(null);
-    setOptimalLng(null);
-    setTravelTimes(new Map());
-    setNearbyPlaces([]);
-  }, []);
+    clearResults();
+  }, [clearResults]);
 
   const clearAll = useCallback(() => {
     setPoints([]);
-    setHeatmapResult(null);
-    setOptimalAddress(null);
-    setOptimalTime(null);
-    setOptimalLat(null);
-    setOptimalLng(null);
-    setTravelTimes(new Map());
-    setNearbyPlaces([]);
-  }, []);
+    clearResults();
+  }, [clearResults]);
+
+  const handleSelectCandidate = useCallback((idx: number) => {
+    setActiveCandidate(idx);
+    if (candidates[idx]) {
+      searchNearbyPlaces(candidates[idx].lat, candidates[idx].lng).then(setNearbyPlaces).catch(() => {});
+    }
+  }, [candidates]);
 
   const handleCompute = useCallback(async () => {
     if (points.length < 2) return;
@@ -152,26 +157,49 @@ export default function CityView({ city, graph, onBack, onLegal }: Props) {
         const result = computeHeatmap(points, graph);
         setHeatmapResult(result);
 
-        const times = new Map<string, number>();
-        let totalTime = 0;
-        for (const p of points) {
-          const t = graph.travelTime(p.lat, p.lng, result.optimal.lat, result.optimal.lng, p.hasBike);
-          times.set(p.id, t);
-          totalTime += t;
-        }
-        setTravelTimes(times);
-        setOptimalTime(totalTime / points.length);
-        setOptimalLat(result.optimal.lat);
-        setOptimalLng(result.optimal.lng);
+        // Extract top 3 candidates
+        const topCandidates = extractTopCandidates(result, amenityGrid, 3);
 
-        try {
-          const data = await reverseGeocode(result.optimal.lat, result.optimal.lng);
-          setOptimalAddress(data.display_name?.split(',').slice(0, 3).join(',') || 'Point optimal');
-        } catch {
-          setOptimalAddress(`${result.optimal.lat.toFixed(4)}, ${result.optimal.lng.toFixed(4)}`);
+        // Compute travel times and reverse geocode for each candidate
+        const candidateResults: CandidateResult[] = [];
+
+        for (let ci = 0; ci < topCandidates.length; ci++) {
+          const c = topCandidates[ci];
+          const times = new Map<string, number>();
+          let totalTime = 0;
+          for (const p of points) {
+            const t = graph.travelTime(p.lat, p.lng, c.lat, c.lng, p.hasBike);
+            times.set(p.id, t);
+            totalTime += t;
+          }
+
+          let address: string;
+          try {
+            // Stagger geocoding requests to respect rate limits
+            if (ci > 0) await new Promise(r => setTimeout(r, 350));
+            const data = await reverseGeocode(c.lat, c.lng);
+            address = data.display_name?.split(',').slice(0, 3).join(',') || `${c.lat.toFixed(4)}, ${c.lng.toFixed(4)}`;
+          } catch {
+            address = `${c.lat.toFixed(4)}, ${c.lng.toFixed(4)}`;
+          }
+
+          candidateResults.push({
+            lat: c.lat,
+            lng: c.lng,
+            address,
+            avgTime: totalTime / points.length,
+            amenityScore: c.amenityScore,
+            rank: ci + 1,
+            travelTimes: times,
+          });
         }
 
-        searchNearbyPlaces(result.optimal.lat, result.optimal.lng).then(setNearbyPlaces).catch(() => {});
+        setCandidates(candidateResults);
+
+        // Search nearby places for the top candidate
+        if (candidateResults.length > 0) {
+          searchNearbyPlaces(candidateResults[0].lat, candidateResults[0].lng).then(setNearbyPlaces).catch(() => {});
+        }
 
         // On mobile, open the panel and scroll to results
         setSidebarOpen(true);
@@ -186,7 +214,7 @@ export default function CityView({ city, graph, onBack, onLegal }: Props) {
         setComputing(false);
       }
     }, 50);
-  }, [points, graph]);
+  }, [points, graph, amenityGrid]);
 
   // Auto-compute on load if points came from URL
   const [hasUrlPoints] = useState(() => window.location.hash.startsWith('#p='));
@@ -206,11 +234,9 @@ export default function CityView({ city, graph, onBack, onLegal }: Props) {
         onRemovePoint={removePoint}
         onCompute={handleCompute}
         computing={computing}
-        optimalAddress={optimalAddress}
-        optimalTime={optimalTime}
-        optimalLat={optimalLat}
-        optimalLng={optimalLng}
-        travelTimes={travelTimes}
+        candidates={candidates}
+        activeCandidate={activeCandidate}
+        onSelectCandidate={handleSelectCandidate}
         isOpen={sidebarOpen}
         onToggle={() => setSidebarOpen(!sidebarOpen)}
         showTransit={showTransit}
@@ -232,7 +258,9 @@ export default function CityView({ city, graph, onBack, onLegal }: Props) {
           points={points}
           heatmapResult={heatmapResult}
           showHeatmap={showHeatmap}
-          optimalAddress={optimalAddress}
+          candidates={candidates}
+          activeCandidate={activeCandidate}
+          onSelectCandidate={handleSelectCandidate}
           onMapClick={handleMapClick}
           showTransit={showTransit}
           nearbyPlaces={nearbyPlaces}

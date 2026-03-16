@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { SelectedPoint } from '../utils/heatmap';
 import type { NearbyPlace } from '../utils/places';
+import type { CandidateResult } from './CityView';
 import AddressSearch from './AddressSearch';
 import LanguageSelector from './LanguageSelector';
 import { useI18n } from '../i18n/context';
@@ -17,11 +18,9 @@ interface Props {
   onRemovePoint: (id: string) => void;
   onCompute: () => void;
   computing: boolean;
-  optimalAddress: string | null;
-  optimalTime: number | null;
-  optimalLat: number | null;
-  optimalLng: number | null;
-  travelTimes: Map<string, number>;
+  candidates: CandidateResult[];
+  activeCandidate: number;
+  onSelectCandidate: (idx: number) => void;
   isOpen: boolean;
   onToggle: () => void;
   showTransit: boolean;
@@ -43,7 +42,7 @@ const cityNameKeys: Record<string, string> = { london: 'london' };
 
 export default function Sidebar({
   points, onAddPoint, onRemovePoint, onCompute, computing,
-  optimalAddress, optimalTime, optimalLat, optimalLng, travelTimes, isOpen, onToggle, showTransit, onToggleTransit, showHeatmap, onToggleHeatmap, onToggleBike, onClearAll, getShareUrl, nearbyPlaces, onBack, onLegal, cityName, citySlug, cityCountry,
+  candidates, activeCandidate, onSelectCandidate, isOpen, onToggle, showTransit, onToggleTransit, showHeatmap, onToggleHeatmap, onToggleBike, onClearAll, getShareUrl, nearbyPlaces, onBack, onLegal, cityName, citySlug, cityCountry,
 }: Props) {
   const { t } = useI18n();
   const [shareOpen, setShareOpen] = useState(false);
@@ -213,22 +212,20 @@ export default function Sidebar({
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm text-white truncate">{p.address}</p>
-                      {travelTimes.has(p.id) ? (
+                      {candidates.length > 0 && candidates[activeCandidate]?.travelTimes.has(p.id) ? (
                         <p className="text-xs text-indigo-400 font-medium flex items-center gap-1">
-                          {Math.round(travelTimes.get(p.id)!)} {t.minTravel}
-                          {optimalLat !== null && optimalLng !== null && (
-                            <a
-                              href={`https://www.google.com/maps/dir/?api=1&origin=${p.lat},${p.lng}&destination=${optimalLat},${optimalLng}&travelmode=${p.hasBike ? 'bicycling' : 'transit'}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              title={t.viewRoute}
-                              className="text-slate-400 hover:text-indigo-300 transition-colors"
-                            >
-                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                              </svg>
-                            </a>
-                          )}
+                          {Math.round(candidates[activeCandidate].travelTimes.get(p.id)!)} {t.minTravel}
+                          <a
+                            href={`https://www.google.com/maps/dir/?api=1&origin=${p.lat},${p.lng}&destination=${candidates[activeCandidate].lat},${candidates[activeCandidate].lng}&travelmode=${p.hasBike ? 'bicycling' : 'transit'}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title={t.viewRoute}
+                            className="text-slate-400 hover:text-indigo-300 transition-colors"
+                          >
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                          </a>
                         </p>
                       ) : (
                         <p className="text-xs text-slate-400">
@@ -262,19 +259,42 @@ export default function Sidebar({
               </div>
             )}
 
-            {/* Optimal result */}
-            {optimalAddress && optimalTime !== null && (
-              <div id="optimal-result" className="bg-emerald-900/30 border border-emerald-700/50 rounded-lg p-3 md:p-4">
-                <div className="flex items-center gap-2 mb-1 md:mb-2">
-                  <span className="text-emerald-400 text-lg">⭐</span>
-                  <h3 className="text-sm font-medium text-emerald-300">
-                    {t.optimalPoint}
-                  </h3>
-                </div>
-                <p className="text-white text-sm font-medium">{optimalAddress}</p>
-                <p className="text-emerald-400 text-sm mt-1">
-                  {t.avgTravelTime} : {Math.round(optimalTime)} min
-                </p>
+            {/* Candidate results */}
+            {candidates.length > 0 && (
+              <div className="space-y-2">
+                {candidates.map((c, idx) => {
+                  const isActive = idx === activeCandidate;
+                  return (
+                    <div
+                      key={idx}
+                      id={idx === 0 ? 'optimal-result' : undefined}
+                      onClick={() => onSelectCandidate(idx)}
+                      className={`rounded-lg p-3 md:p-4 cursor-pointer transition-colors ${
+                        isActive
+                          ? 'bg-emerald-900/30 border border-emerald-700/50'
+                          : 'bg-slate-700/30 border border-slate-600/50 hover:bg-slate-700/50'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 mb-1 md:mb-2">
+                        <span className={`text-lg ${isActive ? 'text-emerald-400' : 'text-slate-400'}`}>
+                          {idx === 0 ? '⭐' : `#${idx + 1}`}
+                        </span>
+                        <h3 className={`text-sm font-medium ${isActive ? 'text-emerald-300' : 'text-slate-300'}`}>
+                          {idx === 0 ? t.optimalPoint : t.alternativePoint}
+                        </h3>
+                        {c.amenityScore > 0 && (
+                          <span className="text-xs text-amber-400 ml-auto" title={t.nearbyAmenities}>
+                            🍽️ {c.amenityScore}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-white text-sm font-medium">{c.address}</p>
+                      <p className={`text-sm mt-1 ${isActive ? 'text-emerald-400' : 'text-slate-400'}`}>
+                        {t.avgTravelTime} : {Math.round(c.avgTime)} min
+                      </p>
+                    </div>
+                  );
+                })}
               </div>
             )}
 

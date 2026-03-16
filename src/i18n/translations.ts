@@ -49,6 +49,8 @@ const fr = {
 
   // Results
   optimalPoint: 'Point de rencontre optimal',
+  alternativePoint: 'Point alternatif',
+  nearbyAmenities: 'commerces à proximité',
   avgTravelTime: 'Temps moyen de trajet',
   nearby: 'À proximité',
   viewOnGoogleMaps: 'Voir sur Google Maps',
@@ -133,6 +135,8 @@ const en: TranslationKeys = {
   computeFull: 'Find meeting point',
 
   optimalPoint: 'Optimal meeting point',
+  alternativePoint: 'Alternative point',
+  nearbyAmenities: 'nearby amenities',
   avgTravelTime: 'Average travel time',
   nearby: 'Nearby',
   viewOnGoogleMaps: 'View on Google Maps',
@@ -203,6 +207,8 @@ const de: TranslationKeys = {
   computeFull: 'Treffpunkt berechnen',
 
   optimalPoint: 'Optimaler Treffpunkt',
+  alternativePoint: 'Alternativer Punkt',
+  nearbyAmenities: 'Geschäfte in der Nähe',
   avgTravelTime: 'Durchschnittliche Fahrzeit',
   nearby: 'In der Nähe',
   viewOnGoogleMaps: 'Auf Google Maps ansehen',
@@ -273,6 +279,8 @@ const it: TranslationKeys = {
   computeFull: 'Calcola il punto di incontro',
 
   optimalPoint: 'Punto di incontro ottimale',
+  alternativePoint: 'Punto alternativo',
+  nearbyAmenities: 'locali nelle vicinanze',
   avgTravelTime: 'Tempo medio di viaggio',
   nearby: 'Nelle vicinanze',
   viewOnGoogleMaps: 'Vedi su Google Maps',
@@ -343,6 +351,8 @@ const es: TranslationKeys = {
   computeFull: 'Calcular punto de encuentro',
 
   optimalPoint: 'Punto de encuentro óptimo',
+  alternativePoint: 'Punto alternativo',
+  nearbyAmenities: 'comercios cercanos',
   avgTravelTime: 'Tiempo medio de viaje',
   nearby: 'Cerca',
   viewOnGoogleMaps: 'Ver en Google Maps',

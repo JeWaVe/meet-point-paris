@@ -1,4 +1,6 @@
 import type { TransitGraph, NearStation } from './transitGraph';
+import type { AmenityGrid } from './amenities';
+import { getAmenityScore } from './amenities';
 
 export interface HeatmapPoint {
   lat: number;
@@ -154,4 +156,62 @@ export function computeHeatmap(selectedPoints: SelectedPoint[], graph: TransitGr
   }
 
   return { points, grid, gridSize: GRID_SIZE, bounds, optimal, minTime, maxTime };
+}
+
+export interface CandidatePoint extends HeatmapPoint {
+  amenityScore: number;
+  combinedScore: number;
+  rank: number;
+}
+
+function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const R = 6371;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+/**
+ * Extract top N spatially-distinct candidates from heatmap, ranked by
+ * a mix of travel time (70%) and amenity density (30%).
+ */
+export function extractTopCandidates(
+  result: HeatmapResult,
+  amenityGrid: AmenityGrid | null,
+  count: number = 3,
+  minDistKm: number = 0.5,
+): CandidatePoint[] {
+  if (result.points.length === 0) return [];
+
+  // 1. Sort by time ascending
+  const sorted = [...result.points].sort((a, b) => a.time - b.time);
+
+  // 2. Pick spatially-distinct pool (up to 10)
+  const pool: HeatmapPoint[] = [];
+  for (const p of sorted) {
+    if (pool.length >= 10) break;
+    const tooClose = pool.some(q => haversineKm(p.lat, p.lng, q.lat, q.lng) < minDistKm);
+    if (!tooClose) pool.push(p);
+  }
+
+  // 3. Score with amenity data
+  const timeRange = result.maxTime - result.minTime || 1;
+  let maxAmenity = 1;
+  const scored = pool.map(p => {
+    const amenityScore = amenityGrid ? getAmenityScore(amenityGrid, p.lat, p.lng) : 0;
+    if (amenityScore > maxAmenity) maxAmenity = amenityScore;
+    return { ...p, amenityScore, combinedScore: 0, rank: 0 };
+  });
+
+  // Compute combined score (lower = better)
+  for (const s of scored) {
+    const normalizedTime = (s.time - result.minTime) / timeRange;
+    const normalizedAmenity = amenityGrid ? s.amenityScore / maxAmenity : 0;
+    s.combinedScore = 0.7 * normalizedTime + 0.3 * (1 - normalizedAmenity);
+  }
+
+  // 4. Sort by combined score, return top N
+  scored.sort((a, b) => a.combinedScore - b.combinedScore);
+  return scored.slice(0, count).map((s, i) => ({ ...s, rank: i + 1 }));
 }

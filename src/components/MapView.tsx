@@ -4,6 +4,7 @@ import L from 'leaflet';
 import type { LatLngBoundsExpression } from 'leaflet';
 import type { SelectedPoint, HeatmapResult } from '../utils/heatmap';
 import type { NearbyPlace } from '../utils/places';
+import type { CandidateResult } from './CityView';
 import type { Station } from '../data/types';
 import type { LineDefinition } from '../data/types';
 import TransitLayer from './TransitLayer';
@@ -35,6 +36,19 @@ const optimalIcon = new L.DivIcon({
   iconSize: [36, 36],
   iconAnchor: [18, 18],
 });
+
+const candidateIcons: Record<number, L.DivIcon> = {};
+function getCandidateIcon(rank: number): L.DivIcon {
+  if (!candidateIcons[rank]) {
+    candidateIcons[rank] = new L.DivIcon({
+      html: `<div style="background: #64748b; width: 30px; height: 30px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; font-weight: 700; font-family: system-ui, sans-serif;">#${rank}</div>`,
+      className: '',
+      iconSize: [30, 30],
+      iconAnchor: [15, 15],
+    });
+  }
+  return candidateIcons[rank];
+}
 
 function getPlaceCategory(types: string[], t: { bar: string; cafe: string; restaurant: string }): { emoji: string; label: string } {
   if (types.includes('bar')) return { emoji: '🍸', label: t.bar };
@@ -203,7 +217,9 @@ function CanvasHeatmapLayer({ heatmapResult }: { heatmapResult: HeatmapResult | 
 interface Props {
   points: SelectedPoint[];
   heatmapResult: HeatmapResult | null;
-  optimalAddress: string | null;
+  candidates: CandidateResult[];
+  activeCandidate: number;
+  onSelectCandidate: (idx: number) => void;
   onMapClick: (lat: number, lng: number) => void;
   showTransit: boolean;
   showHeatmap: boolean;
@@ -216,7 +232,7 @@ interface Props {
   minZoom: number;
 }
 
-export default function MapView({ points, heatmapResult, optimalAddress, onMapClick, showTransit, showHeatmap, nearbyPlaces, stations, lines, center, defaultZoom, maxBounds, minZoom }: Props) {
+export default function MapView({ points, heatmapResult, candidates, activeCandidate, onSelectCandidate, onMapClick, showTransit, showHeatmap, nearbyPlaces, stations, lines, center, defaultZoom, maxBounds, minZoom }: Props) {
   const { t } = useI18n();
   return (
     <MapContainer
@@ -272,21 +288,24 @@ export default function MapView({ points, heatmapResult, optimalAddress, onMapCl
         );
       })}
 
-      {heatmapResult && heatmapResult.points.length > 0 && (
+      {candidates.map((c, idx) => (
         <Marker
-          position={[heatmapResult.optimal.lat, heatmapResult.optimal.lng]}
-          icon={optimalIcon}
-          zIndexOffset={1000}
+          key={`candidate-${idx}`}
+          position={[c.lat, c.lng]}
+          icon={idx === activeCandidate ? optimalIcon : getCandidateIcon(idx + 1)}
+          zIndexOffset={idx === activeCandidate ? 1000 : 900}
+          eventHandlers={{ click: () => onSelectCandidate(idx) }}
         >
           <Popup>
             <div className="text-sm">
-              <strong>{t.optimalPoint}</strong><br />
-              {optimalAddress || t.computing}<br />
-              {t.avgTime} : {Math.round(heatmapResult.optimal.time)} min
+              <strong>{idx === 0 ? t.optimalPoint : `${t.alternativePoint} #${idx + 1}`}</strong><br />
+              {c.address}<br />
+              {t.avgTime} : {Math.round(c.avgTime)} min
+              {c.amenityScore > 0 && <><br />🍽️ {c.amenityScore} {t.nearbyAmenities}</>}
             </div>
           </Popup>
         </Marker>
-      )}
+      ))}
     </MapContainer>
   );
 }

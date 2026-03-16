@@ -1,5 +1,6 @@
 import type { LatLngBoundsExpression } from 'leaflet';
 import type { CityTransitData } from '../../utils/transitGraph';
+import type { AmenityGrid } from '../../utils/amenities';
 
 export interface CityDef {
   slug: string;
@@ -12,6 +13,7 @@ export interface CityDef {
   maxBounds: LatLngBoundsExpression;
   minZoom: number;
   load: () => Promise<CityTransitData>;
+  loadAmenities: () => Promise<{ amenityGrid: AmenityGrid }>;
 }
 
 export const cities: CityDef[] = [
@@ -33,6 +35,7 @@ export const cities: CityDef[] = [
       ]);
       return { stations, connections, lines, gtfsSegmentTimes, gtfsTransferTimes };
     },
+    loadAmenities: async () => import('./paris/amenities'),
   },
   {
     slug: 'toulouse',
@@ -52,6 +55,7 @@ export const cities: CityDef[] = [
       ]);
       return { stations, connections, lines, gtfsSegmentTimes, gtfsTransferTimes };
     },
+    loadAmenities: async () => import('./toulouse/amenities'),
   },
   {
     slug: 'marseille',
@@ -71,6 +75,7 @@ export const cities: CityDef[] = [
       ]);
       return { stations, connections, lines, gtfsSegmentTimes, gtfsTransferTimes };
     },
+    loadAmenities: async () => import('./marseille/amenities'),
   },
   {
     slug: 'london',
@@ -90,6 +95,7 @@ export const cities: CityDef[] = [
       ]);
       return { stations, connections, lines, gtfsSegmentTimes, gtfsTransferTimes };
     },
+    loadAmenities: async () => import('./london/amenities'),
   },
   {
     slug: 'new-york',
@@ -109,6 +115,7 @@ export const cities: CityDef[] = [
       ]);
       return { stations, connections, lines, gtfsSegmentTimes, gtfsTransferTimes };
     },
+    loadAmenities: async () => import('./new-york/amenities'),
   },
 ];
 
