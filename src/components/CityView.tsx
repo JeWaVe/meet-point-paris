@@ -2,7 +2,6 @@ import { useState, useCallback, useEffect } from 'react';
 import MapView from './MapView';
 import Sidebar from './Sidebar';
 import { computeHeatmap, extractTopCandidates } from '../utils/heatmap';
-import type { CandidatePoint } from '../utils/heatmap';
 import { TransitGraph } from '../utils/transitGraph';
 import { searchNearbyPlaces } from '../utils/places';
 import { reverseGeocode } from '../utils/geocoding';
