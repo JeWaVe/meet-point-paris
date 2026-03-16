@@ -78,6 +78,14 @@ function MapClickHandler({ onClick }: { onClick: (lat: number, lng: number) => v
   return null;
 }
 
+function FlyToHandler({ target }: { target: [number, number] | null }) {
+  const map = useMap();
+  useEffect(() => {
+    if (target) map.flyTo(target, 14, { duration: 1 });
+  }, [target, map]);
+  return null;
+}
+
 function timeToColor(t: number, minTime: number, maxTime: number): [number, number, number, number] {
   const range = maxTime - minTime || 1;
   const linear = Math.max(0, Math.min(1, (t - minTime) / range));
@@ -230,9 +238,10 @@ interface Props {
   defaultZoom: number;
   maxBounds: LatLngBoundsExpression;
   minZoom: number;
+  flyTo?: [number, number] | null;
 }
 
-export default function MapView({ points, heatmapResult, candidates, activeCandidate, onSelectCandidate, onMapClick, showTransit, showHeatmap, nearbyPlaces, stations, lines, center, defaultZoom, maxBounds, minZoom }: Props) {
+export default function MapView({ points, heatmapResult, candidates, activeCandidate, onSelectCandidate, onMapClick, showTransit, showHeatmap, nearbyPlaces, stations, lines, center, defaultZoom, maxBounds, minZoom, flyTo: flyToTarget = null }: Props) {
   const { t } = useI18n();
   return (
     <MapContainer
@@ -250,6 +259,7 @@ export default function MapView({ points, heatmapResult, candidates, activeCandi
       />
 
       <MapClickHandler onClick={onMapClick} />
+      <FlyToHandler target={flyToTarget} />
 
       {/* Transit lines and stations layer (below heatmap when heatmap is active) */}
       <TransitLayer showLines={showTransit} showStations={showTransit} stations={stations} lines={lines} />

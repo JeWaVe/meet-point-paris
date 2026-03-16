@@ -66,6 +66,7 @@ export default function CityView({ city, graph, onBack, onLegal }: Props) {
   const [showTransit, setShowTransit] = useState(true);
   const [showHeatmap, setShowHeatmap] = useState(false);
   const [nearbyPlaces, setNearbyPlaces] = useState<NearbyPlace[]>([]);
+  const [flyTo, setFlyTo] = useState<[number, number] | null>(null);
   const [amenityGrid, setAmenityGrid] = useState<AmenityGrid | null>(null);
 
   // Load amenity data (non-blocking)
@@ -195,8 +196,9 @@ export default function CityView({ city, graph, onBack, onLegal }: Props) {
 
         setCandidates(candidateResults);
 
-        // Search nearby places for the top candidate
+        // Search nearby places for the top candidate + fly to it
         if (candidateResults.length > 0) {
+          setFlyTo([candidateResults[0].lat, candidateResults[0].lng]);
           searchNearbyPlaces(candidateResults[0].lat, candidateResults[0].lng).then(setNearbyPlaces).catch(() => {});
         }
 
@@ -269,6 +271,7 @@ export default function CityView({ city, graph, onBack, onLegal }: Props) {
           defaultZoom={city.defaultZoom}
           maxBounds={city.maxBounds}
           minZoom={city.minZoom}
+          flyTo={flyTo}
         />
       </div>
     </div>
