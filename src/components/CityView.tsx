@@ -62,7 +62,7 @@ export default function CityView({ city, graph, onBack, onLegal }: Props) {
   const [computing, setComputing] = useState(false);
   const [candidates, setCandidates] = useState<CandidateResult[]>([]);
   const [activeCandidate, setActiveCandidate] = useState(0);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showTransit, setShowTransit] = useState(true);
   const [showHeatmap, setShowHeatmap] = useState(false);
   const [nearbyPlaces, setNearbyPlaces] = useState<NearbyPlace[]>([]);
@@ -108,7 +108,6 @@ export default function CityView({ city, graph, onBack, onLegal }: Props) {
     };
     setPoints(prev => [...prev, newPoint]);
     clearResults();
-    setSidebarOpen(false);
   }, [clearResults]);
 
   const handleMapClick = useCallback(async (lat: number, lng: number) => {
@@ -149,6 +148,7 @@ export default function CityView({ city, graph, onBack, onLegal }: Props) {
   const handleCompute = useCallback(async () => {
     if (points.length < 2) return;
 
+    setSidebarOpen(false);
     setComputing(true);
 
     setTimeout(async () => {

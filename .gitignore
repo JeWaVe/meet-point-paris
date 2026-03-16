@@ -13,6 +13,9 @@ dist-ssr
 gtfs-cache/
 *.local
 
+# Video generation
+scripts/generate-video.mjs
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
