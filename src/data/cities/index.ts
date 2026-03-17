@@ -118,6 +118,26 @@ export const cities: CityDef[] = [
     loadAmenities: async () => import('./london/amenities'),
   },
   {
+    slug: 'berlin',
+    name: 'Berlin',
+    country: 'Germany',
+    description: 'U-Bahn, S-Bahn',
+    transitTypes: ['metro', 'rer'],
+    center: [52.52, 13.405],
+    defaultZoom: 11,
+    maxBounds: [[52.33, 13.05], [52.70, 13.78]],
+    minZoom: 10,
+    load: async () => {
+      const [{ stations, connections }, { lines }, { gtfsSegmentTimes, gtfsTransferTimes }] = await Promise.all([
+        import('./berlin/stations'),
+        import('./berlin/lines'),
+        import('./berlin/gtfs-times'),
+      ]);
+      return { stations, connections, lines, gtfsSegmentTimes, gtfsTransferTimes };
+    },
+    loadAmenities: async () => import('./berlin/amenities'),
+  },
+  {
     slug: 'new-york',
     name: 'New York',
     country: 'United States',

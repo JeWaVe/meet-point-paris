@@ -2,7 +2,7 @@
 
 Find the optimal meeting point in a city based on public transit travel times.
 
-Enter multiple departure addresses, and the app computes the best place to meet — minimizing overall travel time across metro, Underground, RER, tramway, and bike networks.
+Enter multiple departure addresses, and the app computes the best place to meet — minimizing overall travel time across metro, Underground, U-Bahn, S-Bahn, RER, tramway, and bike networks.
 
 **Live demo:** https://wheretomeet.app/
 
@@ -15,13 +15,14 @@ Enter multiple departure addresses, and the app computes the best place to meet 
 | **Marseille** | Metro (M1, M2), Tramway (T1, T2, T3) — 68 stations | RTM GTFS |
 | **Lyon** | Metro (A, B, C, D), Tramway (T1–T7), Funiculaire (F1, F2) — 170+ stations | TCL GTFS |
 | **London** | Underground (Tube) — 11 lines, 266 stations | TfL open data |
+| **Berlin** | U-Bahn (U1–U9), S-Bahn (S1–S9, S25, S26, S41/S42, S46, S47, S75, S85) — 270+ stations | BVG / VBB |
 | **New York** | Subway — 23 lines, 424 stations | MTA GTFS |
 
 Each city has its own lazy-loaded data bundle (stations, lines, GTFS times), so only the selected city's data is downloaded.
 
 ## Features
 
-- **Multi-city support** — Landing page with city picker, path-based routing (`/paris`, `/toulouse`, `/lyon`, `/london`, `/new-york`)
+- **Multi-city support** — Landing page with city picker, path-based routing (`/paris`, `/toulouse`, `/lyon`, `/london`, `/berlin`, `/new-york`)
 - **Interactive map** — Click on the map or search addresses to add departure points
 - **Real GTFS travel times** — Inter-station times and transfer durations extracted from official GTFS datasets, with realistic dwell time, boarding penalty, and transfer wait times
 - **Line-aware routing** — Expanded graph where each node is a (station, line) pair, so line switches at shared stations incur a realistic transfer cost. Precomputed all-pairs shortest paths with spatial index for fast nearest-station lookup
@@ -59,8 +60,8 @@ The `scripts/` directory contains Node scripts to extract data from GTFS feeds:
 To regenerate GTFS data for a city:
 
 ```bash
-node scripts/extract-gtfs.mjs paris      # or toulouse, marseille, lyon
-node scripts/build-gtfs-data.mjs paris    # or toulouse, marseille, lyon
+node scripts/extract-gtfs.mjs paris      # or toulouse, marseille, lyon, berlin
+node scripts/build-gtfs-data.mjs paris    # or toulouse, marseille, lyon, berlin
 ```
 
 ## Adding a new city
@@ -120,6 +121,7 @@ src/
       marseille/                 # Marseille data (stations, lines, gtfs-times)
       lyon/                      # Lyon data (stations, lines, gtfs-times)
       london/                    # London data (stations, lines, gtfs-times)
+      berlin/                    # Berlin data (stations, lines, gtfs-times)
       new-york/                  # New York data (stations, lines, gtfs-times)
   utils/
     transitGraph.ts              # TransitGraph class, Dijkstra, spatial index

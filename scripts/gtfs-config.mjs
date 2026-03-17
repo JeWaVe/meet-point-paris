@@ -86,4 +86,17 @@ export const cities = {
     routeNames: {}, // filled dynamically from routes.txt
     routeToLine: {}, // filled dynamically from routes.txt
   },
+  berlin: {
+    name: 'Berlin (VBB)',
+    gtfsUrl: 'https://www.vbb.de/vbbgtfs',
+    cacheDir: './gtfs-cache/berlin',
+    stationsFile: './src/data/cities/berlin/stations.ts',
+    outputFile: './src/data/cities/berlin/gtfs-times.ts',
+    generatedComment: 'Auto-generated from GTFS VBB data - do not edit manually',
+    // Filter by route_type: 1=metro (U-Bahn), 2=rail (S-Bahn)
+    routeFilter: 'types',
+    routeTypes: new Set(['1', '2']),
+    routeNames: {}, // filled dynamically from routes.txt
+    routeToLine: {}, // filled dynamically from routes.txt
+  },
 };

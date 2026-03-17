@@ -5,9 +5,9 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📍</text></svg>" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>WhereToMeet — Find the ideal meeting point using public transit</title>
-    <meta name="description" content="Find the optimal meeting point using public transit in Paris, Toulouse, Marseille, Lyon, London, and New York. Add departure addresses and find the fairest place to meet. Metro, RER, tram, Underground, funicular, cable car, and bike. Available in French, English, German, Italian, and Spanish." />
+    <meta name="description" content="Find the optimal meeting point using public transit in Paris, Toulouse, Marseille, Lyon, London, Berlin, and New York. Add departure addresses and find the fairest place to meet. Metro, RER, tram, Underground, U-Bahn, S-Bahn, funicular, cable car, and bike. Available in French, English, German, Italian, and Spanish." />
     <link rel="canonical" href="https://wheretomeet.app/" />
-    <meta name="keywords" content="meeting point, point de rencontre, Treffpunkt, punto de encuentro, punto di incontro, Paris, Toulouse, Marseille, Lyon, London, New York, NYC, Subway, public transit, transports en commun, metro, RER, tram, funiculaire, Underground, Tube, bike, optimal" />
+    <meta name="keywords" content="meeting point, point de rencontre, Treffpunkt, punto de encuentro, punto di incontro, Paris, Toulouse, Marseille, Lyon, London, Berlin, New York, NYC, Subway, U-Bahn, S-Bahn, public transit, transports en commun, metro, RER, tram, funiculaire, Underground, Tube, bike, optimal" />
     <meta name="robots" content="index, follow" />
     <link rel="alternate" hreflang="en" href="https://wheretomeet.app/" />
     <link rel="alternate" hreflang="fr" href="https://wheretomeet.app/" />
@@ -20,7 +20,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="WhereToMeet" />
     <meta property="og:title" content="WhereToMeet — Find the ideal meeting point using public transit" />
-    <meta property="og:description" content="Find the optimal meeting point using public transit in Paris, Toulouse, Marseille, Lyon, London, and New York. Restaurants and bars nearby." />
+    <meta property="og:description" content="Find the optimal meeting point using public transit in Paris, Toulouse, Marseille, Lyon, London, Berlin, and New York. Restaurants and bars nearby." />
     <meta property="og:image" content="https://wheretomeet.app/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -34,7 +34,7 @@
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="WhereToMeet — Find the ideal meeting point using public transit" />
-    <meta name="twitter:description" content="Optimal meeting point using public transit in Paris, Toulouse, Marseille, Lyon, London, and New York. Metro, Underground, tram, funicular, bike." />
+    <meta name="twitter:description" content="Optimal meeting point using public transit in Paris, Toulouse, Marseille, Lyon, London, Berlin, and New York. Metro, Underground, U-Bahn, S-Bahn, tram, funicular, bike." />
     <meta name="twitter:image" content="https://wheretomeet.app/og-image.png" />
 
     <!-- Structured Data -->
@@ -44,7 +44,7 @@
       "@type": "WebApplication",
       "name": "WhereToMeet",
       "url": "https://wheretomeet.app/",
-      "description": "Find the optimal meeting point using public transit in Paris, Toulouse, Marseille, Lyon, London, and New York. Metro, RER, tram, funicular, Underground, cable car, and bike.",
+      "description": "Find the optimal meeting point using public transit in Paris, Toulouse, Marseille, Lyon, London, Berlin, and New York. Metro, RER, tram, funicular, Underground, U-Bahn, S-Bahn, cable car, and bike.",
       "applicationCategory": "TravelApplication",
       "operatingSystem": "Web",
       "offers": {
@@ -82,6 +82,11 @@
         },
         {
           "@type": "City",
+          "name": "Berlin",
+          "sameAs": "https://www.wikidata.org/wiki/Q64"
+        },
+        {
+          "@type": "City",
           "name": "New York City",
           "sameAs": "https://www.wikidata.org/wiki/Q60"
         }
@@ -100,7 +105,7 @@
         <p>WhereToMeet finds the optimal meeting point using public transit in your city. Available in French, English, German, Italian, and Spanish.</p>
         <h2>How it works</h2>
         <ol>
-          <li>Choose your city: Paris, Toulouse, Marseille, Lyon, London, or New York</li>
+          <li>Choose your city: Paris, Toulouse, Marseille, Lyon, London, Berlin, or New York</li>
           <li>Add 2 or more departure addresses (search or click on the map)</li>
           <li>Toggle bike mode for each participant if needed</li>
           <li>Click "Find meeting point"</li>
@@ -112,6 +117,7 @@
         <p><strong>Marseille:</strong> Metro (M1, M2), Tram (T1, T2, T3) — 68 stations.</p>
         <p><strong>Lyon:</strong> Metro (A, B, C, D), Tram (T1–T7), Funicular (F1, F2) — 170+ stations.</p>
         <p><strong>London:</strong> Underground (Tube) — 11 lines, 266 stations.</p>
+        <p><strong>Berlin:</strong> U-Bahn (9 lines) + S-Bahn (15 lines) — 270+ stations.</p>
         <p><strong>New York:</strong> Subway — 23 lines, 424 stations.</p>
         <p>Real travel times from official GTFS data.</p>
         <p><strong>JavaScript is required to use this application.</strong></p>
