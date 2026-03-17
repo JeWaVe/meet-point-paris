@@ -13,6 +13,7 @@ Enter multiple departure addresses, and the app computes the best place to meet 
 | **Paris** | Metro (1–14, 3bis, 7bis), RER (A–E), Tramway (T1–T13) — 750+ stations | IDFM GTFS |
 | **Toulouse** | Metro (A, B), Tramway (T1), Téléphérique (Téléo) — 66 stations | Tisséo GTFS |
 | **Marseille** | Metro (M1, M2), Tramway (T1, T2, T3) — 68 stations | RTM GTFS |
+| **Lyon** | Metro (A, B, C, D), Tramway (T1–T7), Funiculaire (F1, F2) — 170+ stations | TCL GTFS |
 | **London** | Underground (Tube) — 11 lines, 266 stations | TfL open data |
 | **New York** | Subway — 23 lines, 424 stations | MTA GTFS |
 
@@ -20,7 +21,7 @@ Each city has its own lazy-loaded data bundle (stations, lines, GTFS times), so 
 
 ## Features
 
-- **Multi-city support** — Landing page with city picker, path-based routing (`/paris`, `/toulouse`, `/london`, `/new-york`)
+- **Multi-city support** — Landing page with city picker, path-based routing (`/paris`, `/toulouse`, `/lyon`, `/london`, `/new-york`)
 - **Interactive map** — Click on the map or search addresses to add departure points
 - **Real GTFS travel times** — Inter-station times and transfer durations extracted from official GTFS datasets, with realistic dwell time, boarding penalty, and transfer wait times
 - **Line-aware routing** — Expanded graph where each node is a (station, line) pair, so line switches at shared stations incur a realistic transfer cost. Precomputed all-pairs shortest paths with spatial index for fast nearest-station lookup
@@ -58,8 +59,8 @@ The `scripts/` directory contains Node scripts to extract data from GTFS feeds:
 To regenerate GTFS data for a city:
 
 ```bash
-node scripts/extract-gtfs.mjs paris      # or toulouse, marseille
-node scripts/build-gtfs-data.mjs paris    # or toulouse, marseille
+node scripts/extract-gtfs.mjs paris      # or toulouse, marseille, lyon
+node scripts/build-gtfs-data.mjs paris    # or toulouse, marseille, lyon
 ```
 
 ## Adding a new city
@@ -117,6 +118,7 @@ src/
       paris/                     # Paris data (stations, lines, gtfs-times)
       toulouse/                  # Toulouse data (stations, lines, gtfs-times)
       marseille/                 # Marseille data (stations, lines, gtfs-times)
+      lyon/                      # Lyon data (stations, lines, gtfs-times)
       london/                    # London data (stations, lines, gtfs-times)
       new-york/                  # New York data (stations, lines, gtfs-times)
   utils/
