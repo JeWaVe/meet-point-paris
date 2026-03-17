@@ -87,7 +87,7 @@ export default function Sidebar({
         transform: isOpen ? 'translateY(0)' : 'translateY(calc(100% + 46px + env(safe-area-inset-bottom, 0px)))',
       }} className={`
         fixed inset-x-0 z-40
-        md:relative md:inset-auto md:bottom-auto
+        md:relative md:!inset-auto
         bg-slate-800 border-t border-slate-700 md:border-t-0 md:border-r
         rounded-t-2xl md:rounded-none
         max-h-[75vh] md:max-h-none md:h-full
