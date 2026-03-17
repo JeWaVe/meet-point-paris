@@ -72,4 +72,18 @@ export const cities = {
     routeNames: {}, // filled dynamically from routes.txt
     routeToLine: {}, // filled dynamically from routes.txt
   },
+
+  lyon: {
+    name: 'Lyon (TCL)',
+    gtfsUrl: 'https://transport.data.gouv.fr/resources/11681/download',
+    cacheDir: './gtfs-cache/lyon',
+    stationsFile: './src/data/cities/lyon/stations.ts',
+    outputFile: './src/data/cities/lyon/gtfs-times.ts',
+    generatedComment: 'Auto-generated from GTFS TCL data - do not edit manually',
+    // Filter by route_type: 0=tram, 1=metro, 7=funicular
+    routeFilter: 'types',
+    routeTypes: new Set(['0', '1', '7']),
+    routeNames: {}, // filled dynamically from routes.txt
+    routeToLine: {}, // filled dynamically from routes.txt
+  },
 };

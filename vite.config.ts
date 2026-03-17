@@ -32,6 +32,12 @@ const citySeo: Record<string, CitySeo> = {
       'Find the optimal meeting point in Marseille using Métro and Tramway. 68 stations covered with real GTFS travel times.',
     areaServed: { name: 'Marseille', sameAs: 'https://www.wikidata.org/wiki/Q2619' },
   },
+  lyon: {
+    title: 'WhereToMeet — Find the ideal meeting point in Lyon by metro, tram, funicular',
+    description:
+      'Find the optimal meeting point in Lyon using Métro, Tramway, and Funiculaire. 170+ stations covered. Add departure addresses and meet halfway.',
+    areaServed: { name: 'Lyon', sameAs: 'https://www.wikidata.org/wiki/Q456' },
+  },
   london: {
     title: 'WhereToMeet — Find the ideal meeting point in London by Underground',
     description:
@@ -107,7 +113,7 @@ function buildCityHtml(html: string, slug: string): string {
 
 // Generate {slug}/index.html for each SPA route so GitHub Pages serves 200 (not 404)
 function spaRoutes(): Plugin {
-  const routes = ['paris', 'toulouse', 'marseille', 'london', 'new-york', 'legal']
+  const routes = ['paris', 'toulouse', 'marseille', 'lyon', 'london', 'new-york', 'legal']
   return {
     name: 'spa-routes',
     closeBundle() {

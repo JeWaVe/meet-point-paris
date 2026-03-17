@@ -78,6 +78,26 @@ export const cities: CityDef[] = [
     loadAmenities: async () => import('./marseille/amenities'),
   },
   {
+    slug: 'lyon',
+    name: 'Lyon',
+    country: 'France',
+    description: 'Métro, Tramway, Funiculaire',
+    transitTypes: ['metro', 'tram', 'funicular'],
+    center: [45.7640, 4.8357],
+    defaultZoom: 13,
+    maxBounds: [[45.68, 4.76], [45.82, 5.02]],
+    minZoom: 12,
+    load: async () => {
+      const [{ stations, connections }, { lines }, { gtfsSegmentTimes, gtfsTransferTimes }] = await Promise.all([
+        import('./lyon/stations'),
+        import('./lyon/lines'),
+        import('./lyon/gtfs-times'),
+      ]);
+      return { stations, connections, lines, gtfsSegmentTimes, gtfsTransferTimes };
+    },
+    loadAmenities: async () => import('./lyon/amenities'),
+  },
+  {
     slug: 'london',
     name: 'London',
     country: 'United Kingdom',

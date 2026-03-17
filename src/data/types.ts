@@ -16,7 +16,7 @@ export interface LineDefinition {
   id: string;
   name: string;
   color: string;
-  type: 'metro' | 'rer' | 'tram' | 'cable';
+  type: 'metro' | 'rer' | 'tram' | 'cable' | 'funicular';
   // Each branch is an ordered array of station IDs
   branches: string[][];
 }
