@@ -16,7 +16,7 @@ const fr = {
   openMap: 'Ouvrir la carte',
   comingSoon: 'Bientôt...',
   moreCities: "D'autres villes arrivent",
-  comingCities: 'Lyon, Lille...',
+  comingCities: 'Lille, Bordeaux, Munich, Madrid, Rome, Bruxelles, Amsterdam, Barcelone, Milan, Vienne...',
 
   // Sidebar header
   subtitle: 'Trouvez le lieu de rendez-vous idéal',
@@ -108,7 +108,7 @@ const en: TranslationKeys = {
   openMap: 'Open map',
   comingSoon: 'Coming soon...',
   moreCities: 'More cities coming',
-  comingCities: 'Lyon, Lille...',
+  comingCities: 'Lille, Bordeaux, Munich, Madrid, Rome, Brussels, Amsterdam, Barcelona, Milan, Vienna...',
 
   subtitle: 'Find the ideal meeting point',
   changeCity: 'Change city',
@@ -180,7 +180,7 @@ const de: TranslationKeys = {
   openMap: 'Karte öffnen',
   comingSoon: 'Demnächst...',
   moreCities: 'Weitere Städte folgen',
-  comingCities: 'Lyon, Lille...',
+  comingCities: 'Lille, Bordeaux, München, Madrid, Rom, Brüssel, Amsterdam, Barcelona, Mailand, Wien...',
 
   subtitle: 'Finden Sie den idealen Treffpunkt',
   changeCity: 'Stadt wechseln',
@@ -252,7 +252,7 @@ const it: TranslationKeys = {
   openMap: 'Apri la mappa',
   comingSoon: 'Prossimamente...',
   moreCities: 'Altre città in arrivo',
-  comingCities: 'Lyon, Lille...',
+  comingCities: 'Lille, Bordeaux, Monaco di Baviera, Madrid, Roma, Bruxelles, Amsterdam, Barcellona, Milano, Vienna...',
 
   subtitle: 'Trova il punto di incontro ideale',
   changeCity: 'Cambia città',
@@ -324,7 +324,7 @@ const es: TranslationKeys = {
   openMap: 'Abrir mapa',
   comingSoon: 'Próximamente...',
   moreCities: 'Más ciudades próximamente',
-  comingCities: 'Lyon, Lille...',
+  comingCities: 'Lille, Burdeos, Múnich, Madrid, Roma, Bruselas, Ámsterdam, Barcelona, Milán, Viena...',
 
   subtitle: 'Encuentra el punto de encuentro ideal',
   changeCity: 'Cambiar de ciudad',

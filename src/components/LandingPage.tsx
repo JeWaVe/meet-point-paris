@@ -1,3 +1,4 @@
+import { useState, useEffect, useCallback } from 'react';
 import { cities } from '../data/cities';
 import type { CityDef } from '../data/cities';
 import { useI18n } from '../i18n/context';
@@ -27,6 +28,24 @@ const descriptionKeys: Record<string, keyof typeof import('../i18n/translations'
 export default function LandingPage({ onSelectCity, onLegal }: Props) {
   const { t } = useI18n();
   const tt = t as Record<string, string>;
+
+  const comingCities = t.comingCities.split(',').map(s => s.replace(/\.+$/, '').trim()).filter(Boolean);
+  const [cityIndex, setCityIndex] = useState(0);
+  const [fading, setFading] = useState(false);
+
+  const advance = useCallback(() => {
+    setFading(true);
+    setTimeout(() => {
+      setCityIndex(i => (i + 2) % comingCities.length);
+      setFading(false);
+    }, 300);
+  }, [comingCities.length]);
+
+  useEffect(() => {
+    const id = setInterval(advance, 2500);
+    return () => clearInterval(id);
+  }, [advance]);
+
   return (
     <div className="h-full bg-gray-950 text-white flex flex-col overflow-y-auto">
       {/* Header */}
@@ -91,7 +110,9 @@ export default function LandingPage({ onSelectCity, onLegal }: Props) {
                 </div>
                 <span className="text-2xl opacity-30">🏙️</span>
               </div>
-              <p className="text-gray-700 text-sm mt-3">{t.comingCities}</p>
+              <p className={`text-gray-700 text-sm mt-3 transition-opacity duration-300 ${fading ? 'opacity-0' : 'opacity-100'}`}>
+                {comingCities[cityIndex]}, {comingCities[(cityIndex + 1) % comingCities.length]}...
+              </p>
             </div>
           </div>
         </div>
